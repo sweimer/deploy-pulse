@@ -62,12 +62,10 @@ export function Header({ daysExercisedThisWeek, exercisesCompletedToday, totalEx
         {/* Stats */}
         <div className="flex items-center gap-3 flex-wrap">
           {/* Days exercised this week */}
-          <div className="flex items-center gap-2 bg-violet-50 rounded-2xl px-3.5 py-2">
-            <CalendarCheck size={18} className="text-violet-500" strokeWidth={2} />
-            <div className="leading-none">
-              <span className="text-lg font-bold text-violet-600">{daysExercisedThisWeek}/7</span>
-              <p className="text-[16px] text-violet-400 font-medium mt-0.5">days this week</p>
-            </div>
+          <div className="flex flex-col items-center bg-violet-50 rounded-2xl px-3.5 py-2 min-w-[60px]">
+            <CalendarCheck size={18} className="text-violet-500 mb-1" strokeWidth={2} />
+            <span className="text-lg font-bold text-violet-600 leading-none">{daysExercisedThisWeek}/7</span>
+            <p className="text-[16px] text-violet-400 font-medium mt-0.5">days</p>
           </div>
 
           {/* Progress ring */}
@@ -77,12 +75,10 @@ export function Header({ daysExercisedThisWeek, exercisesCompletedToday, totalEx
           </div>
 
           {/* Active minutes */}
-          <div className="flex items-center gap-2 bg-emerald-50 rounded-2xl px-3.5 py-2">
-            <Clock size={16} className="text-emerald-500" strokeWidth={2} />
-            <div className="leading-none">
-              <span className="text-lg font-bold text-emerald-600">{totalActiveMinutes}</span>
-              <p className="text-[16px] text-emerald-400 font-medium mt-0.5">min active</p>
-            </div>
+          <div className="flex flex-col items-center bg-emerald-50 rounded-2xl px-3.5 py-2 min-w-[60px]">
+            <Clock size={16} className="text-emerald-500 mb-1" strokeWidth={2} />
+            <span className="text-lg font-bold text-emerald-600 leading-none">{totalActiveMinutes}</span>
+            <p className="text-[16px] text-emerald-400 font-medium mt-0.5">mins</p>
           </div>
         </div>
       </div>
