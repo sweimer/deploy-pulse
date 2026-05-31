@@ -1,27 +1,16 @@
 import { useState } from 'react'
 import { Check, Calendar } from 'lucide-react'
 
+
 const todayStr = () => new Date().toISOString().split('T')[0]
 
 const COLOR = {
-  blue: {
-    badge:  'bg-blue-100 text-blue-700',
-    iconBg: 'bg-blue-50 text-blue-300',
-    done:   'bg-blue-50 text-blue-600 hover:bg-blue-100',
-  },
-  violet: {
-    badge:  'bg-violet-100 text-violet-700',
-    iconBg: 'bg-violet-50 text-violet-300',
-    done:   'bg-violet-50 text-violet-600 hover:bg-violet-100',
-  },
-  orange: {
-    badge:  'bg-orange-100 text-orange-700',
-    iconBg: 'bg-orange-50 text-orange-300',
-    done:   'bg-orange-50 text-orange-600 hover:bg-orange-100',
-  },
+  blue:   { badge: 'bg-blue-100 text-blue-700',     done: 'bg-blue-50 text-blue-600 hover:bg-blue-100'     },
+  violet: { badge: 'bg-violet-100 text-violet-700', done: 'bg-violet-50 text-violet-600 hover:bg-violet-100' },
+  orange: { badge: 'bg-orange-100 text-orange-700', done: 'bg-orange-50 text-orange-600 hover:bg-orange-100' },
 }
 
-export function ActivityCard({ activityKey, name, label, icon: Icon, color, weeklyHabits, onLog }) {
+export function ActivityCard({ activityKey, name, label, gifUrl, color, weeklyHabits, onLog }) {
   const [durationStr, setDurationStr] = useState('30')
   const [date, setDate] = useState(todayStr())
 
@@ -40,12 +29,14 @@ export function ActivityCard({ activityKey, name, label, icon: Icon, color, week
           : 'border-transparent hover:shadow-card-hover',
       ].join(' ')}
     >
-      {/* Icon area — matches GIF height on exercise cards */}
-      <div
-        className={`w-full flex items-center justify-center ${c.iconBg}`}
-        style={{ height: 160 }}
-      >
-        <Icon size={72} strokeWidth={1} />
+      {/* Animated GIF */}
+      <div className="w-full bg-slate-100 flex items-center justify-center" style={{ height: 160 }}>
+        <img
+          src={gifUrl}
+          alt={`${name} demonstration`}
+          loading="lazy"
+          className="h-full w-full object-contain"
+        />
       </div>
 
       {/* Card body */}

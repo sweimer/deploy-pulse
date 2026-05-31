@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { Calendar, CalendarDays, Dumbbell, Bike, Sparkles, Mountain } from 'lucide-react'
+import { Calendar, CalendarDays, Dumbbell } from 'lucide-react'
 import { useAppState } from './hooks/useAppState'
 import { Header } from './components/Header'
 import { ExerciseCard } from './components/ExerciseCard'
@@ -9,10 +9,12 @@ import { HistoryFeed } from './components/HistoryFeed'
 import { WeeklyView } from './components/WeeklyView'
 import { CalendarView } from './components/CalendarView'
 
+const GIF_BASE = 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0'
+
 const ACTIVITIES = [
-  { activityKey: 'yoga',        name: 'Yoga',           label: '✨ Yoga',      icon: Sparkles, color: 'violet' },
-  { activityKey: 'peloton',     name: 'Peloton Ride',   label: '🚴 Peloton',  icon: Bike,     color: 'blue'   },
-  { activityKey: 'outdoorBike', name: 'Outdoor Bike',   label: '⛰️ Outdoor',  icon: Mountain, color: 'orange' },
+  { activityKey: 'yoga',        name: 'Yoga',           label: '✨ Yoga',      color: 'violet', gifUrl: `${GIF_BASE}/spine/upward-facing-dog.gif`         },
+  { activityKey: 'peloton',     name: 'Peloton Ride',   label: '🚴 Peloton',  color: 'blue',   gifUrl: `${GIF_BASE}/cardio/stationary-bike-run-v-3.gif`  },
+  { activityKey: 'outdoorBike', name: 'Outdoor Bike',   label: '⛰️ Outdoor',  color: 'orange', gifUrl: `${GIF_BASE}/cardio/cycle-cross-trainer.gif`       },
 ]
 
 export default function App() {
@@ -50,9 +52,9 @@ export default function App() {
   )
 
   const tabs = [
-    { id: 'today', label: "Today's Breaks", icon: <Dumbbell size={14} /> },
+    { id: 'today', label: 'Today', icon: <Dumbbell size={14} /> },
     { id: 'week', label: 'This Week', icon: <Calendar size={14} /> },
-    { id: 'calendar', label: 'Calendar', icon: <CalendarDays size={14} /> },
+    { id: 'calendar', label: 'This Month', icon: <CalendarDays size={14} /> },
   ]
 
   return (
