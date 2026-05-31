@@ -48,6 +48,7 @@ export async function initDB() {
   if (rows.length === 0) {
     await migrateFromLocalStorage(db)
     await db.query("INSERT INTO app_meta (key, value) VALUES ('migrated', 'true')")
+    localStorage.removeItem(LEGACY_KEY)
   }
 
   return db
