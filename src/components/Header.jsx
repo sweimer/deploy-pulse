@@ -52,7 +52,7 @@ export function Header({ daysExercisedThisWeek, exercisesCompletedToday, totalEx
         {/* Brand */}
         <div>
           <h1 className="text-lg font-semibold text-slate-800 tracking-tight leading-none">
-            DeployPulse
+            DeployPulse Exercise Log
           </h1>
           <p className="text-[17px] text-slate-400 mt-0.5 font-medium tracking-widest uppercase">
             {today}
