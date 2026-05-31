@@ -1,184 +1,136 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback } from 'react'
+import { usePGlite, useLiveQuery } from '@electric-sql/pglite-react'
 import { INITIAL_EXERCISES } from '../data/exercises'
-
-const STORAGE_KEY = 'deploypulse_v4'
-const LEGACY_KEYS = ['deploypulse_v3', 'deploypulse_v2', 'deploypulse_v1']
 
 const todayStr = () => new Date().toISOString().split('T')[0]
 
-// Runs at module load — migrates logs/streak/habits from any prior version.
-// Writes a complete state (including fresh INITIAL_EXERCISES) so exercise
-// defaults are always correct after a full page reload.
-const migrateIfNeeded = () => {
-  if (localStorage.getItem(STORAGE_KEY)) return
-  let logs = [], streak = { count: 0, lastLogDate: null }, weeklyHabits = {}
-  for (const key of LEGACY_KEYS) {
-    const raw = localStorage.getItem(key)
-    if (!raw) continue
-    try {
-      const parsed = JSON.parse(raw)
-      logs = parsed.logs || []
-      streak = parsed.streak || streak
-      weeklyHabits = parsed.weeklyHabits || {}
-    } catch { /* ignore corrupt data */ }
-    break
-  }
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({ exercises: INITIAL_EXERCISES, logs, streak, weeklyHabits }),
-  )
-}
-
-migrateIfNeeded()
-
-const load = () => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : null
-  } catch {
-    return null
-  }
-}
-
-const DEFAULT_STATE = {
-  exercises: INITIAL_EXERCISES,
-  logs: [],
-  streak: { count: 0, lastLogDate: null },
-  weeklyHabits: {},
+// Stored as TEXT in DB: 'true', 'false', or a numeric string like '30'
+const parseHabitValue = (v) => {
+  if (v === 'true') return true
+  if (v === 'false') return false
+  const n = Number(v)
+  return isNaN(n) ? false : n
 }
 
 export function useAppState() {
-  const [state, setState] = useState(() => {
-    const saved = load()
-    if (!saved) return DEFAULT_STATE
+  const db = usePGlite()
 
-    // Always start from INITIAL_EXERCISES (preserves gifUrl, formTip, etc.)
-    // and overlay only the user-adjustable fields from localStorage.
-    const USER_FIELDS = ['weight', 'targetReps']
-    const savedMap = new Map((saved.exercises || []).map((e) => [e.id, e]))
-    const exercises = INITIAL_EXERCISES.map((canonical) => {
-      const saved = savedMap.get(canonical.id)
-      if (!saved) return canonical
-      const overrides = Object.fromEntries(USER_FIELDS.map((k) => [k, saved[k] ?? canonical[k]]))
-      return { ...canonical, ...overrides }
-    })
+  const logsResult = useLiveQuery('SELECT * FROM logs ORDER BY timestamp ASC')
+  const prefsResult = useLiveQuery('SELECT * FROM exercise_prefs')
+  const habitsResult = useLiveQuery('SELECT * FROM habits')
 
-    return { ...DEFAULT_STATE, ...saved, exercises }
+  // Merge user prefs onto canonical exercise definitions
+  const prefsMap = new Map((prefsResult?.rows ?? []).map((r) => [r.id, r]))
+  const exercises = INITIAL_EXERCISES.map((ex) => {
+    const pref = prefsMap.get(ex.id)
+    return pref ? { ...ex, weight: pref.weight, targetReps: pref.target_reps } : ex
   })
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-  }, [state])
+  // Reconstruct weeklyHabits shape { [date]: { [habitKey]: boolean | number } }
+  const weeklyHabits = {}
+  for (const row of habitsResult?.rows ?? []) {
+    if (!weeklyHabits[row.date]) weeklyHabits[row.date] = {}
+    weeklyHabits[row.date][row.habit_key] = parseHabitValue(row.value)
+  }
 
-  const updateExercise = useCallback((id, updates) => {
-    setState((prev) => ({
-      ...prev,
-      exercises: prev.exercises.map((e) => (e.id === id ? { ...e, ...updates } : e)),
-    }))
-  }, [])
-
-  const logExercise = useCallback((exerciseId, exerciseName, sets, reps, weight) => {
-    const now = new Date()
-    const today = todayStr()
-
-    setState((prev) => {
-      let { count, lastLogDate } = prev.streak
-
-      // Streak update: increment if logging for the first time today
-      if (lastLogDate !== today) {
-        const yesterday = new Date(now)
-        yesterday.setDate(yesterday.getDate() - 1)
-        const yStr = yesterday.toISOString().split('T')[0]
-        count = lastLogDate === yStr ? count + 1 : 1
-        lastLogDate = today
-      }
-
-      return {
-        ...prev,
-        logs: [
-          ...prev.logs,
-          {
-            id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-            exerciseId,
-            exerciseName,
-            sets,
-            reps,
-            weight,
-            timestamp: now.toISOString(),
-            date: today,
-          },
-        ],
-        streak: { count, lastLogDate },
-      }
-    })
-  }, [])
-
-  const toggleWeeklyHabit = useCallback((date, habit) => {
-    setState((prev) => ({
-      ...prev,
-      weeklyHabits: {
-        ...prev.weeklyHabits,
-        [date]: {
-          ...(prev.weeklyHabits[date] || {}),
-          [habit]: !(prev.weeklyHabits[date]?.[habit] ?? false),
-        },
-      },
-    }))
-  }, [])
-
-  // Log a timed activity (Peloton, Yoga, Outdoor Bike) for a specific date.
-  // Updates weeklyHabits (for calendar/weekly views) and appends to logs
-  // (so Today's Log shows it when the date matches today).
-  const logHabit = useCallback((date, habitKey, minutes, activityName) => {
-    setState((prev) => ({
-      ...prev,
-      weeklyHabits: {
-        ...prev.weeklyHabits,
-        [date]: {
-          ...(prev.weeklyHabits[date] || {}),
-          [habitKey]: minutes,
-        },
-      },
-      logs: [
-        ...prev.logs,
-        {
-          id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-          type: 'activity',
-          activityKey: habitKey,
-          exerciseName: activityName,
-          durationMinutes: minutes,
-          timestamp: new Date().toISOString(),
-          date,
-        },
-      ],
-    }))
-  }, [])
+  // Normalize DB column names to the shape the UI expects
+  const logs = (logsResult?.rows ?? []).map((row) => ({
+    id: row.id,
+    type: row.type,
+    exerciseId: row.exercise_id,
+    exerciseName: row.exercise_name,
+    sets: row.sets,
+    reps: row.reps,
+    weight: row.weight,
+    activityKey: row.activity_key,
+    durationMinutes: row.duration_minutes,
+    timestamp: row.timestamp,
+    date: row.date,
+  }))
 
   const today = todayStr()
-  const todayLogs = state.logs.filter((l) => l.date === today)
+  const todayLogs = logs.filter((l) => l.date === today)
 
-  // Count unique exercises logged today for progress ring (exclude activity logs)
   const exercisesCompletedToday = new Set(
     todayLogs.filter((l) => l.type !== 'activity').map((l) => l.exerciseId),
   ).size
 
-  // ~2 min per exercise set; full duration for activity logs
-  const totalActiveMinutes = todayLogs.reduce((acc, l) => {
-    return acc + (l.type === 'activity' ? (l.durationMinutes || 0) : l.sets * 2)
-  }, 0)
+  const totalActiveMinutes = todayLogs.reduce(
+    (acc, l) => acc + (l.type === 'activity' ? (l.durationMinutes || 0) : (l.sets || 0) * 2),
+    0,
+  )
 
-  // Unique days with at least one log entry in the current Mon–Sun week
-  const dow = new Date().getDay() // 0 = Sun
+  const dow = new Date().getDay()
   const daysFromMonday = (dow + 6) % 7
   const thisMonday = new Date()
   thisMonday.setDate(thisMonday.getDate() - daysFromMonday)
   const weekStartStr = thisMonday.toISOString().split('T')[0]
   const daysExercisedThisWeek = new Set(
-    state.logs.filter((l) => l.date >= weekStartStr && l.date <= today).map((l) => l.date),
+    logs.filter((l) => l.date >= weekStartStr && l.date <= today).map((l) => l.date),
   ).size
 
+  const updateExercise = useCallback(
+    async (id, updates) => {
+      if ('weight' in updates) {
+        await db.query('UPDATE exercise_prefs SET weight = $1 WHERE id = $2', [updates.weight, id])
+      }
+      if ('targetReps' in updates) {
+        await db.query('UPDATE exercise_prefs SET target_reps = $1 WHERE id = $2', [updates.targetReps, id])
+      }
+    },
+    [db],
+  )
+
+  const logExercise = useCallback(
+    async (exerciseId, exerciseName, sets, reps, weight) => {
+      const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+      await db.query(
+        `INSERT INTO logs (id, type, exercise_id, exercise_name, sets, reps, weight, timestamp, date)
+         VALUES ($1, 'exercise', $2, $3, $4, $5, $6, $7, $8)`,
+        [id, exerciseId, exerciseName, sets, reps, weight, new Date().toISOString(), todayStr()],
+      )
+    },
+    [db],
+  )
+
+  const toggleWeeklyHabit = useCallback(
+    async (date, habitKey) => {
+      const { rows } = await db.query(
+        'SELECT value FROM habits WHERE date = $1 AND habit_key = $2',
+        [date, habitKey],
+      )
+      const current = rows[0]?.value
+      const newValue = current && current !== 'false' ? 'false' : 'true'
+      await db.query(
+        `INSERT INTO habits (date, habit_key, value) VALUES ($1, $2, $3)
+         ON CONFLICT (date, habit_key) DO UPDATE SET value = EXCLUDED.value`,
+        [date, habitKey, newValue],
+      )
+    },
+    [db],
+  )
+
+  const logHabit = useCallback(
+    async (date, habitKey, minutes, activityName) => {
+      await db.query(
+        `INSERT INTO habits (date, habit_key, value) VALUES ($1, $2, $3)
+         ON CONFLICT (date, habit_key) DO UPDATE SET value = EXCLUDED.value`,
+        [date, habitKey, String(minutes)],
+      )
+      const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+      await db.query(
+        `INSERT INTO logs (id, type, activity_key, exercise_name, duration_minutes, timestamp, date)
+         VALUES ($1, 'activity', $2, $3, $4, $5, $6)`,
+        [id, habitKey, activityName, minutes, new Date().toISOString(), date],
+      )
+    },
+    [db],
+  )
+
   return {
-    ...state,
+    exercises,
+    logs,
+    weeklyHabits,
     updateExercise,
     logExercise,
     toggleWeeklyHabit,
