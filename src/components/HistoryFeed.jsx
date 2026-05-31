@@ -1,12 +1,13 @@
-import { Dumbbell, Clock, Bike, Sparkles, Mountain } from 'lucide-react'
+import { Dumbbell, Clock, Bike, Sparkles, Mountain, PersonStanding } from 'lucide-react'
 
 function fmtTime(iso) {
   return new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
 }
 
 const ACTIVITY_STYLE = {
-  peloton:     { bar: 'bg-blue-300',   icon: <Bike size={12} className="text-blue-500" /> },
   yoga:        { bar: 'bg-violet-300', icon: <Sparkles size={12} className="text-violet-500" /> },
+  walk:        { bar: 'bg-teal-300',   icon: <PersonStanding size={12} className="text-teal-500" /> },
+  peloton:     { bar: 'bg-blue-300',   icon: <Bike size={12} className="text-blue-500" /> },
   outdoorBike: { bar: 'bg-orange-300', icon: <Mountain size={12} className="text-orange-500" /> },
 }
 

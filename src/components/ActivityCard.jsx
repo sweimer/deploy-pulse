@@ -5,9 +5,10 @@ import { Check, Calendar } from 'lucide-react'
 const todayStr = () => new Date().toISOString().split('T')[0]
 
 const COLOR = {
-  blue:   { badge: 'bg-blue-100 text-blue-700',     done: 'bg-blue-50 text-blue-600 hover:bg-blue-100'     },
+  blue:   { badge: 'bg-blue-100 text-blue-700',     done: 'bg-blue-50 text-blue-600 hover:bg-blue-100'       },
   violet: { badge: 'bg-violet-100 text-violet-700', done: 'bg-violet-50 text-violet-600 hover:bg-violet-100' },
   orange: { badge: 'bg-orange-100 text-orange-700', done: 'bg-orange-50 text-orange-600 hover:bg-orange-100' },
+  teal:   { badge: 'bg-teal-100 text-teal-700',     done: 'bg-teal-50 text-teal-600 hover:bg-teal-100'       },
 }
 
 export function ActivityCard({ activityKey, name, label, gifUrl, color, weeklyHabits, onLog }) {

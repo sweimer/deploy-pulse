@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { ChevronLeft, ChevronRight, Bike, Sparkles, Dumbbell, Mountain } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Bike, Sparkles, Dumbbell, Mountain, PersonStanding } from 'lucide-react'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -39,8 +39,9 @@ const MONTH_NAMES = [
 const DAY_HEADERS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
 
 const HABITS = [
-  { key: 'peloton',     label: 'Peloton',      dot: 'bg-blue-400',   badge: 'bg-blue-100 text-blue-700',     hover: 'hover:bg-blue-50 hover:text-blue-500',     active: 'bg-blue-100 text-blue-700',     icon: (s) => <Bike size={s} /> },
   { key: 'yoga',        label: 'Yoga',         dot: 'bg-violet-400', badge: 'bg-violet-100 text-violet-700', hover: 'hover:bg-violet-50 hover:text-violet-500', active: 'bg-violet-100 text-violet-700', icon: (s) => <Sparkles size={s} /> },
+  { key: 'walk',        label: 'Walk',         dot: 'bg-teal-400',   badge: 'bg-teal-100 text-teal-700',     hover: 'hover:bg-teal-50 hover:text-teal-500',     active: 'bg-teal-100 text-teal-700',     icon: (s) => <PersonStanding size={s} /> },
+  { key: 'peloton',     label: 'Peloton',      dot: 'bg-blue-400',   badge: 'bg-blue-100 text-blue-700',     hover: 'hover:bg-blue-50 hover:text-blue-500',     active: 'bg-blue-100 text-blue-700',     icon: (s) => <Bike size={s} /> },
   { key: 'outdoorBike', label: 'Outdoor Bike', dot: 'bg-orange-400', badge: 'bg-orange-100 text-orange-700', hover: 'hover:bg-orange-50 hover:text-orange-500', active: 'bg-orange-100 text-orange-700', icon: (s) => <Mountain size={s} /> },
 ]
 
@@ -224,13 +225,14 @@ export function CalendarView({ logs, weeklyHabits, onToggle }) {
       </div>
 
       {/* ── Month summary strip ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
-          { label: 'Total Sets',    value: monthTotals.sets,         icon: <Dumbbell size={15} className="text-emerald-500" />, bg: 'bg-emerald-50' },
-          { label: 'Active Days',   value: monthTotals.activeDays,   icon: <span className="text-base leading-none">🔥</span>,  bg: 'bg-amber-50' },
-          { label: 'Peloton',       value: monthTotals.peloton,      icon: <Bike size={15} className="text-blue-500" />,        bg: 'bg-blue-50' },
-          { label: 'Yoga',          value: monthTotals.yoga,         icon: <Sparkles size={15} className="text-violet-500" />,  bg: 'bg-violet-50' },
-          { label: 'Outdoor Bike',  value: monthTotals.outdoorBike,  icon: <Mountain size={15} className="text-orange-500" />,  bg: 'bg-orange-50' },
+          { label: 'Total Sets',   value: monthTotals.sets,        icon: <Dumbbell size={15} className="text-emerald-500" />,       bg: 'bg-emerald-50' },
+          { label: 'Active Days',  value: monthTotals.activeDays,  icon: <span className="text-base leading-none">🔥</span>,         bg: 'bg-amber-50'   },
+          { label: 'Yoga',         value: monthTotals.yoga,        icon: <Sparkles size={15} className="text-violet-500" />,         bg: 'bg-violet-50'  },
+          { label: 'Walks',        value: monthTotals.walk,        icon: <PersonStanding size={15} className="text-teal-500" />,     bg: 'bg-teal-50'    },
+          { label: 'Peloton',      value: monthTotals.peloton,     icon: <Bike size={15} className="text-blue-500" />,               bg: 'bg-blue-50'    },
+          { label: 'Outdoor Bike', value: monthTotals.outdoorBike, icon: <Mountain size={15} className="text-orange-500" />,         bg: 'bg-orange-50'  },
         ].map(({ label, value, icon, bg }) => (
           <div key={label} className={`${bg} rounded-2xl px-4 py-3 flex items-center gap-2.5`}>
             {icon}
