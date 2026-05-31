@@ -43,7 +43,7 @@ export function ActivityCard({ activityKey, name, label, gifUrl, color, weeklyHa
       {/* Card body */}
       <div className="p-4 flex flex-col flex-1">
         {/* Badge + done indicator */}
-        <div className="flex items-start justify-between mb-2.5">
+        <div className="flex flex-col gap-1.5 mb-2.5">
           <span className={`text-[17px] font-semibold px-2 py-0.5 rounded-full ${c.badge}`}>
             {label}
           </span>

@@ -1,4 +1,4 @@
-import { Play, RotateCcw, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
 
 const CATEGORY = {
   'out-of-seat': {
@@ -21,14 +21,16 @@ const CATEGORY = {
 
 const WEIGHT_OPTIONS = [20, 25, 30, 35, 40, 45, 50]
 
-export function ExerciseCard({ exercise, isCompletedToday, onStart, onUpdate }) {
+export function ExerciseCard({ exercise, setsLoggedToday, onLog, onUpdate }) {
   const cat = CATEGORY[exercise.category]
+  const totalSets = exercise.totalSets || 3
+  const allDone = setsLoggedToday >= totalSets
 
   return (
     <div
       className={[
         'bg-white rounded-2xl shadow-card border-2 transition-all duration-200 overflow-hidden flex flex-col',
-        isCompletedToday
+        allDone
           ? 'border-emerald-200 bg-emerald-50/20'
           : 'border-transparent hover:shadow-card-hover',
       ].join(' ')}
@@ -51,11 +53,11 @@ export function ExerciseCard({ exercise, isCompletedToday, onStart, onUpdate }) 
       {/* Card body */}
       <div className="p-4 flex flex-col flex-1">
         {/* Top row: category badge + done indicator */}
-        <div className="flex items-start justify-between mb-2.5">
+        <div className="flex flex-col gap-1.5 mb-2.5">
           <span className={`text-[17px] font-semibold px-2 py-0.5 rounded-full ${cat.badge}`}>
             {cat.label}
           </span>
-          {isCompletedToday && (
+          {allDone && (
             <span className="flex items-center gap-1 text-emerald-500 text-xs font-medium">
               <Check size={13} strokeWidth={2.5} />
               Done today
@@ -103,29 +105,28 @@ export function ExerciseCard({ exercise, isCompletedToday, onStart, onUpdate }) 
           </label>
         </div>
 
-        {/* Start break button — mt-auto pins it to the card bottom */}
-        <button
-          onClick={() => onStart(exercise)}
-          className={[
-            'mt-auto w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold',
-            'transition-all duration-150 active:scale-[0.98]',
-            isCompletedToday
-              ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
-              : 'bg-slate-800 text-white hover:bg-slate-700 shadow-sm',
-          ].join(' ')}
-        >
-          {isCompletedToday ? (
-            <>
-              <RotateCcw size={13} strokeWidth={2.5} />
-              Repeat Set
-            </>
-          ) : (
-            <>
-              <Play size={13} fill="currentColor" strokeWidth={0} />
-              Start Break
-            </>
-          )}
-        </button>
+        {/* Set buttons — one per set, log directly on click */}
+        <div className="mt-auto flex gap-1.5">
+          {Array.from({ length: totalSets }, (_, i) => i + 1).map((setNum) => {
+            const done = setsLoggedToday >= setNum
+            return (
+              <button
+                key={setNum}
+                onClick={() => onLog(exercise.id, exercise.name, 1, exercise.targetReps, exercise.weight)}
+                className={[
+                  'flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl text-sm font-semibold',
+                  'transition-all duration-150 active:scale-[0.98]',
+                  done
+                    ? 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200'
+                    : 'bg-slate-800 text-white hover:bg-slate-700 shadow-sm',
+                ].join(' ')}
+              >
+                {done && <Check size={12} strokeWidth={2.5} />}
+                Set {setNum}
+              </button>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

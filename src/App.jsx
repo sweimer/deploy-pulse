@@ -1,10 +1,9 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { Calendar, CalendarDays, Dumbbell } from 'lucide-react'
 import { useAppState } from './hooks/useAppState'
 import { Header } from './components/Header'
 import { ExerciseCard } from './components/ExerciseCard'
 import { ActivityCard } from './components/ActivityCard'
-import { ActiveBreakModal } from './components/ActiveBreakModal'
 import { HistoryFeed } from './components/HistoryFeed'
 import { WeeklyView } from './components/WeeklyView'
 import { CalendarView } from './components/CalendarView'
@@ -20,7 +19,6 @@ const ACTIVITIES = [
 
 export default function App() {
   const [tab, setTab] = useState('today')
-  const [activeExercise, setActiveExercise] = useState(null)
 
   const {
     exercises,
@@ -36,21 +34,18 @@ export default function App() {
     daysExercisedThisWeek,
   } = useAppState()
 
-  const completedIds = new Set(todayLogs.map((l) => l.exerciseId))
+  // Sum of sets logged today per exercise (activity logs excluded)
+  const setsPerExercise = todayLogs
+    .filter((l) => l.type !== 'activity')
+    .reduce((acc, l) => {
+      acc[l.exerciseId] = (acc[l.exerciseId] || 0) + l.sets
+      return acc
+    }, {})
+
   const outOfSeat = exercises.filter((e) => e.category === 'out-of-seat')
   const seated = exercises.filter((e) => e.category === 'seated')
   const pressRaise = exercises.filter((e) => e.category === 'press-raise')
   const bodyweightExercises = exercises.filter((e) => e.category === 'bodyweight')
-
-  const openBreak = useCallback((exercise) => setActiveExercise(exercise), [])
-  const closeBreak = useCallback(() => setActiveExercise(null), [])
-
-  const handleLog = useCallback(
-    (exerciseId, exerciseName, sets, reps, weight) => {
-      logExercise(exerciseId, exerciseName, sets, reps, weight)
-    },
-    [logExercise],
-  )
 
   const tabs = [
     { id: 'today', label: 'Today', icon: <Dumbbell size={14} /> },
@@ -115,8 +110,8 @@ export default function App() {
                     <ExerciseCard
                       key={ex.id}
                       exercise={ex}
-                      isCompletedToday={completedIds.has(ex.id)}
-                      onStart={openBreak}
+                      setsLoggedToday={setsPerExercise[ex.id] || 0}
+                      onLog={logExercise}
                       onUpdate={updateExercise}
                     />
                   ))}
@@ -135,8 +130,8 @@ export default function App() {
                     <ExerciseCard
                       key={ex.id}
                       exercise={ex}
-                      isCompletedToday={completedIds.has(ex.id)}
-                      onStart={openBreak}
+                      setsLoggedToday={setsPerExercise[ex.id] || 0}
+                      onLog={logExercise}
                       onUpdate={updateExercise}
                     />
                   ))}
@@ -155,8 +150,8 @@ export default function App() {
                     <ExerciseCard
                       key={ex.id}
                       exercise={ex}
-                      isCompletedToday={completedIds.has(ex.id)}
-                      onStart={openBreak}
+                      setsLoggedToday={setsPerExercise[ex.id] || 0}
+                      onLog={logExercise}
                       onUpdate={updateExercise}
                     />
                   ))}
@@ -175,8 +170,8 @@ export default function App() {
                     <ExerciseCard
                       key={ex.id}
                       exercise={ex}
-                      isCompletedToday={completedIds.has(ex.id)}
-                      onStart={openBreak}
+                      setsLoggedToday={setsPerExercise[ex.id] || 0}
+                      onLog={logExercise}
                       onUpdate={updateExercise}
                     />
                   ))}
@@ -218,14 +213,6 @@ export default function App() {
         )}
       </main>
 
-      {/* Routine player modal */}
-      {activeExercise && (
-        <ActiveBreakModal
-          exercise={activeExercise}
-          onClose={closeBreak}
-          onLog={handleLog}
-        />
-      )}
     </div>
   )
 }
