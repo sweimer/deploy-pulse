@@ -126,14 +126,46 @@ export function useAppState() {
     }))
   }, [])
 
+  // Log a timed activity (Peloton, Yoga, Outdoor Bike) for a specific date.
+  // Updates weeklyHabits (for calendar/weekly views) and appends to logs
+  // (so Today's Log shows it when the date matches today).
+  const logHabit = useCallback((date, habitKey, minutes, activityName) => {
+    setState((prev) => ({
+      ...prev,
+      weeklyHabits: {
+        ...prev.weeklyHabits,
+        [date]: {
+          ...(prev.weeklyHabits[date] || {}),
+          [habitKey]: minutes,
+        },
+      },
+      logs: [
+        ...prev.logs,
+        {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          type: 'activity',
+          activityKey: habitKey,
+          exerciseName: activityName,
+          durationMinutes: minutes,
+          timestamp: new Date().toISOString(),
+          date,
+        },
+      ],
+    }))
+  }, [])
+
   const today = todayStr()
   const todayLogs = state.logs.filter((l) => l.date === today)
 
-  // Count unique exercises logged today for progress ring
-  const exercisesCompletedToday = new Set(todayLogs.map((l) => l.exerciseId)).size
+  // Count unique exercises logged today for progress ring (exclude activity logs)
+  const exercisesCompletedToday = new Set(
+    todayLogs.filter((l) => l.type !== 'activity').map((l) => l.exerciseId),
+  ).size
 
-  // Estimate ~2 active minutes per set completed
-  const totalActiveMinutes = todayLogs.reduce((acc, l) => acc + l.sets * 2, 0)
+  // ~2 min per exercise set; full duration for activity logs
+  const totalActiveMinutes = todayLogs.reduce((acc, l) => {
+    return acc + (l.type === 'activity' ? (l.durationMinutes || 0) : l.sets * 2)
+  }, 0)
 
   // Unique days with at least one log entry in the current Mon–Sun week
   const dow = new Date().getDay() // 0 = Sun
@@ -150,6 +182,7 @@ export function useAppState() {
     updateExercise,
     logExercise,
     toggleWeeklyHabit,
+    logHabit,
     todayLogs,
     exercisesCompletedToday,
     totalActiveMinutes,

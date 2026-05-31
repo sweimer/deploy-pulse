@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { ChevronLeft, ChevronRight, Bike, Sparkles, Dumbbell } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Bike, Sparkles, Dumbbell, Mountain } from 'lucide-react'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -38,9 +38,15 @@ const MONTH_NAMES = [
 ]
 const DAY_HEADERS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
 
+const HABITS = [
+  { key: 'peloton',     label: 'Peloton',      dot: 'bg-blue-400',   badge: 'bg-blue-100 text-blue-700',     hover: 'hover:bg-blue-50 hover:text-blue-500',     active: 'bg-blue-100 text-blue-700',     icon: (s) => <Bike size={s} /> },
+  { key: 'yoga',        label: 'Yoga',         dot: 'bg-violet-400', badge: 'bg-violet-100 text-violet-700', hover: 'hover:bg-violet-50 hover:text-violet-500', active: 'bg-violet-100 text-violet-700', icon: (s) => <Sparkles size={s} /> },
+  { key: 'outdoorBike', label: 'Outdoor Bike', dot: 'bg-orange-400', badge: 'bg-orange-100 text-orange-700', hover: 'hover:bg-orange-50 hover:text-orange-500', active: 'bg-orange-100 text-orange-700', icon: (s) => <Mountain size={s} /> },
+]
+
 // ── CalendarView ─────────────────────────────────────────────────────────────
 
-export function CalendarView({ logs, weeklyHabits }) {
+export function CalendarView({ logs, weeklyHabits, onToggle }) {
   const today = new Date()
   const todayIso = isoDate(today)
 
@@ -54,11 +60,11 @@ export function CalendarView({ logs, weeklyHabits }) {
   const nextMonth = () => setViewDate(new Date(year, month + 1, 1))
   const canGoForward = new Date(year, month + 1, 1) <= new Date(today.getFullYear(), today.getMonth() + 1, 1)
 
-  // Build per-day stats map for all logs (not just this month — clicking a day
-  // always shows correct data regardless of which month was pre-computed)
+  // Build per-day stats map for all logs
   const dayStats = useMemo(() => {
     const map = {}
     for (const log of logs) {
+      if (log.type === 'activity') continue
       if (!map[log.date]) map[log.date] = { totalSets: 0, exercises: [] }
       map[log.date].totalSets += log.sets
       map[log.date].exercises.push(log)
@@ -70,25 +76,20 @@ export function CalendarView({ logs, weeklyHabits }) {
 
   // Month-level totals (for the summary strip)
   const monthTotals = useMemo(() => {
-    let sets = 0
-    let activeDays = 0
-    let pelotonDays = 0
-    let yogaDays = 0
+    let sets = 0, activeDays = 0
+    const habitCounts = Object.fromEntries(HABITS.map((h) => [h.key, 0]))
     const daysInMonth = new Date(year, month + 1, 0).getDate()
     for (let d = 1; d <= daysInMonth; d++) {
       const ds = isoDate(new Date(year, month, d))
       const stats = dayStats[ds]
-      if (stats?.totalSets > 0) {
-        sets += stats.totalSets
-        activeDays++
+      if (stats?.totalSets > 0) { sets += stats.totalSets; activeDays++ }
+      for (const h of HABITS) {
+        if (weeklyHabits[ds]?.[h.key]) habitCounts[h.key]++
       }
-      if (weeklyHabits[ds]?.peloton) pelotonDays++
-      if (weeklyHabits[ds]?.yoga) yogaDays++
     }
-    return { sets, activeDays, pelotonDays, yogaDays }
+    return { sets, activeDays, ...habitCounts }
   }, [dayStats, weeklyHabits, year, month])
 
-  // Data for the selected day detail panel
   const selectedStats = selectedIso ? dayStats[selectedIso] : null
   const selectedHabits = selectedIso ? (weeklyHabits[selectedIso] || {}) : null
 
@@ -150,6 +151,7 @@ export function CalendarView({ logs, weeklyHabits }) {
             const isSelected = ds === selectedIso
             const habits = weeklyHabits[ds] || {}
             const isFuture = ds > todayIso
+            const activeHabits = HABITS.filter((h) => habits[h.key])
 
             return (
               <button
@@ -180,25 +182,17 @@ export function CalendarView({ logs, weeklyHabits }) {
 
                 {/* Sets count badge */}
                 {totalSets > 0 && (
-                  <span
-                    className={[
-                      'mt-1 text-[18px] font-bold leading-none',
-                      text,
-                    ].join(' ')}
-                  >
+                  <span className={['mt-1 text-[18px] font-bold leading-none', text].join(' ')}>
                     {totalSets}
                   </span>
                 )}
 
                 {/* Habit micro-dots */}
-                {(habits.peloton || habits.yoga) && (
+                {activeHabits.length > 0 && (
                   <div className="flex gap-0.5 mt-1">
-                    {habits.peloton && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400" title="Peloton" />
-                    )}
-                    {habits.yoga && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-violet-400" title="Yoga" />
-                    )}
+                    {activeHabits.map((h) => (
+                      <span key={h.key} className={`w-1.5 h-1.5 rounded-full ${h.dot}`} title={h.label} />
+                    ))}
                   </div>
                 )}
               </button>
@@ -207,7 +201,7 @@ export function CalendarView({ logs, weeklyHabits }) {
         </div>
 
         {/* Intensity legend */}
-        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-slate-50">
+        <div className="flex flex-wrap items-center justify-end gap-2 px-5 py-3 border-t border-slate-50">
           <span className="text-[17px] text-slate-400 mr-1">Sets:</span>
           {[
             { label: '0', bg: 'bg-slate-100' },
@@ -221,22 +215,22 @@ export function CalendarView({ logs, weeklyHabits }) {
               <span className="text-[16px] text-slate-400">{label}</span>
             </div>
           ))}
-          <span className="ml-3 flex items-center gap-1 text-[16px] text-slate-400">
-            <span className="w-2 h-2 rounded-full bg-blue-400 inline-block" /> Peloton
-          </span>
-          <span className="flex items-center gap-1 text-[16px] text-slate-400">
-            <span className="w-2 h-2 rounded-full bg-violet-400 inline-block" /> Yoga
-          </span>
+          {HABITS.map((h) => (
+            <span key={h.key} className="ml-1 flex items-center gap-1 text-[16px] text-slate-400">
+              <span className={`w-2 h-2 rounded-full ${h.dot} inline-block`} /> {h.label}
+            </span>
+          ))}
         </div>
       </div>
 
       {/* ── Month summary strip ── */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         {[
-          { label: 'Total Sets', value: monthTotals.sets, icon: <Dumbbell size={15} className="text-emerald-500" />, bg: 'bg-emerald-50' },
-          { label: 'Active Days', value: monthTotals.activeDays, icon: <span className="text-base leading-none">🔥</span>, bg: 'bg-amber-50' },
-          { label: 'Peloton', value: monthTotals.pelotonDays, icon: <Bike size={15} className="text-blue-500" />, bg: 'bg-blue-50' },
-          { label: 'Yoga', value: monthTotals.yogaDays, icon: <Sparkles size={15} className="text-violet-500" />, bg: 'bg-violet-50' },
+          { label: 'Total Sets',    value: monthTotals.sets,         icon: <Dumbbell size={15} className="text-emerald-500" />, bg: 'bg-emerald-50' },
+          { label: 'Active Days',   value: monthTotals.activeDays,   icon: <span className="text-base leading-none">🔥</span>,  bg: 'bg-amber-50' },
+          { label: 'Peloton',       value: monthTotals.peloton,      icon: <Bike size={15} className="text-blue-500" />,        bg: 'bg-blue-50' },
+          { label: 'Yoga',          value: monthTotals.yoga,         icon: <Sparkles size={15} className="text-violet-500" />,  bg: 'bg-violet-50' },
+          { label: 'Outdoor Bike',  value: monthTotals.outdoorBike,  icon: <Mountain size={15} className="text-orange-500" />,  bg: 'bg-orange-50' },
         ].map(({ label, value, icon, bg }) => (
           <div key={label} className={`${bg} rounded-2xl px-4 py-3 flex items-center gap-2.5`}>
             {icon}
@@ -248,7 +242,7 @@ export function CalendarView({ logs, weeklyHabits }) {
         ))}
       </div>
 
-      {/* ── Day detail panel — appears when a day is selected ── */}
+      {/* ── Day detail panel ── */}
       {selectedIso && (
         <div className="bg-white rounded-2xl shadow-card overflow-hidden animate-slide-up">
           <div className="px-5 py-4 border-b border-slate-50 flex items-center justify-between">
@@ -274,19 +268,29 @@ export function CalendarView({ logs, weeklyHabits }) {
             </button>
           </div>
 
-          {/* Habit badges */}
-          {selectedHabits && (selectedHabits.peloton || selectedHabits.yoga) && (
-            <div className="flex gap-2 px-5 pt-3">
-              {selectedHabits.peloton && (
-                <span className="flex items-center gap-1.5 text-xs font-semibold bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-                  <Bike size={12} /> Peloton done
-                </span>
-              )}
-              {selectedHabits.yoga && (
-                <span className="flex items-center gap-1.5 text-xs font-semibold bg-violet-100 text-violet-700 px-3 py-1 rounded-full">
-                  <Sparkles size={12} /> Yoga done
-                </span>
-              )}
+          {/* Habit toggles */}
+          {onToggle && selectedHabits !== null && (
+            <div className="flex flex-wrap gap-2 px-5 pt-3">
+              {HABITS.map((h) => {
+                const isOn = selectedHabits[h.key]
+                return (
+                  <button
+                    key={h.key}
+                    onClick={() => onToggle(selectedIso, h.key)}
+                    className={[
+                      'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold',
+                      'transition-all duration-150',
+                      isOn ? h.active : `bg-slate-50 text-slate-400 ${h.hover}`,
+                    ].join(' ')}
+                  >
+                    {h.icon(12)}
+                    {h.label}
+                    {typeof isOn === 'number' && isOn > 0 && (
+                      <span className="ml-0.5 opacity-70">{isOn} min</span>
+                    )}
+                  </button>
+                )
+              })}
             </div>
           )}
 
@@ -295,7 +299,6 @@ export function CalendarView({ logs, weeklyHabits }) {
             {!selectedStats?.exercises?.length ? (
               <p className="text-sm text-slate-400 py-4 text-center">No exercises logged this day.</p>
             ) : (
-              // Group entries by exerciseId to collapse repeats
               Object.values(
                 selectedStats.exercises.reduce((acc, log) => {
                   if (!acc[log.exerciseId]) acc[log.exerciseId] = { name: log.exerciseName, entries: [] }

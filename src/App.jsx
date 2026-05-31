@@ -1,12 +1,19 @@
 import { useCallback, useState } from 'react'
-import { Calendar, CalendarDays, Dumbbell } from 'lucide-react'
+import { Calendar, CalendarDays, Dumbbell, Bike, Sparkles, Mountain } from 'lucide-react'
 import { useAppState } from './hooks/useAppState'
 import { Header } from './components/Header'
 import { ExerciseCard } from './components/ExerciseCard'
+import { ActivityCard } from './components/ActivityCard'
 import { ActiveBreakModal } from './components/ActiveBreakModal'
 import { HistoryFeed } from './components/HistoryFeed'
 import { WeeklyView } from './components/WeeklyView'
 import { CalendarView } from './components/CalendarView'
+
+const ACTIVITIES = [
+  { activityKey: 'yoga',        name: 'Yoga',           label: '✨ Yoga',      icon: Sparkles, color: 'violet' },
+  { activityKey: 'peloton',     name: 'Peloton Ride',   label: '🚴 Peloton',  icon: Bike,     color: 'blue'   },
+  { activityKey: 'outdoorBike', name: 'Outdoor Bike',   label: '⛰️ Outdoor',  icon: Mountain, color: 'orange' },
+]
 
 export default function App() {
   const [tab, setTab] = useState('today')
@@ -19,6 +26,7 @@ export default function App() {
     updateExercise,
     logExercise,
     toggleWeeklyHabit,
+    logHabit,
     todayLogs,
     exercisesCompletedToday,
     totalActiveMinutes,
@@ -171,6 +179,25 @@ export default function App() {
                   ))}
                 </div>
               </section>
+
+              {/* Cardio & Mobility section */}
+              <section>
+                <SectionHeader
+                  dot="bg-sky-400"
+                  label="Cardio & Mobility"
+                  subtitle="Log rides and yoga — pick a date to backfill"
+                />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                  {ACTIVITIES.map((a) => (
+                    <ActivityCard
+                      key={a.activityKey}
+                      {...a}
+                      weeklyHabits={weeklyHabits}
+                      onLog={logHabit}
+                    />
+                  ))}
+                </div>
+              </section>
             </div>
           </div>
         ) : tab === 'week' ? (
@@ -183,6 +210,7 @@ export default function App() {
           <CalendarView
             logs={logs}
             weeklyHabits={weeklyHabits}
+            onToggle={toggleWeeklyHabit}
           />
         )}
       </main>

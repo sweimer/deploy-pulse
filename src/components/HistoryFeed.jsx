@@ -1,7 +1,13 @@
-import { Dumbbell, Clock } from 'lucide-react'
+import { Dumbbell, Clock, Bike, Sparkles, Mountain } from 'lucide-react'
 
 function fmtTime(iso) {
   return new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+}
+
+const ACTIVITY_STYLE = {
+  peloton:     { bar: 'bg-blue-300',   icon: <Bike size={12} className="text-blue-500" /> },
+  yoga:        { bar: 'bg-violet-300', icon: <Sparkles size={12} className="text-violet-500" /> },
+  outdoorBike: { bar: 'bg-orange-300', icon: <Mountain size={12} className="text-orange-500" /> },
 }
 
 export function HistoryFeed({ todayLogs, totalActiveMinutes }) {
@@ -34,28 +40,39 @@ export function HistoryFeed({ todayLogs, totalActiveMinutes }) {
             </p>
           </div>
         ) : (
-          [...todayLogs].reverse().map((log) => (
-            <div
-              key={log.id}
-              className="flex items-start gap-2.5 bg-slate-50/70 rounded-xl p-3"
-            >
-              {/* Accent bar */}
-              <div className="w-[3px] self-stretch rounded-full bg-emerald-300 shrink-0 mt-0.5" />
+          [...todayLogs].reverse().map((log) => {
+            const isActivity = log.type === 'activity'
+            const style = isActivity ? (ACTIVITY_STYLE[log.activityKey] || { bar: 'bg-sky-300', icon: null }) : null
 
-              <div className="flex-1 min-w-0">
-                <p className="text-[19px] font-semibold text-slate-700 leading-snug truncate">
-                  {log.exerciseName}
-                </p>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  {log.sets}×{log.reps} @ {log.weight} lbs
-                </p>
+            return (
+              <div
+                key={log.id}
+                className="flex items-start gap-2.5 bg-slate-50/70 rounded-xl p-3"
+              >
+                <div className={`w-[3px] self-stretch rounded-full shrink-0 mt-0.5 ${isActivity ? style.bar : 'bg-emerald-300'}`} />
+
+                <div className="flex-1 min-w-0">
+                  <p className="text-[19px] font-semibold text-slate-700 leading-snug truncate">
+                    {log.exerciseName}
+                  </p>
+                  {isActivity ? (
+                    <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                      {style.icon}
+                      {log.durationMinutes} min
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {log.sets}×{log.reps} @ {log.weight} lbs
+                    </p>
+                  )}
+                </div>
+
+                <span className="text-[17px] text-slate-300 font-medium shrink-0 pt-0.5">
+                  {fmtTime(log.timestamp)}
+                </span>
               </div>
-
-              <span className="text-[17px] text-slate-300 font-medium shrink-0 pt-0.5">
-                {fmtTime(log.timestamp)}
-              </span>
-            </div>
-          ))
+            )
+          })
         )}
       </div>
     </aside>

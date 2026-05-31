@@ -1,4 +1,4 @@
-import { Bike, Sparkles, Dumbbell } from 'lucide-react'
+import { Bike, Sparkles, Dumbbell, Mountain } from 'lucide-react'
 
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -26,21 +26,23 @@ export function WeeklyView({ weeklyHabits, logs, onToggle }) {
   // Weekly summary counts
   const weekDayStrings = days.map(iso)
   const totalLifts = weekDayStrings.reduce((acc, ds) => {
-    return acc + new Set(logs.filter((l) => l.date === ds).map((l) => l.exerciseId)).size
+    return acc + new Set(logs.filter((l) => l.date === ds && l.type !== 'activity').map((l) => l.exerciseId)).size
   }, 0)
   const totalPeloton = weekDayStrings.filter((ds) => weeklyHabits[ds]?.peloton).length
   const totalYoga = weekDayStrings.filter((ds) => weeklyHabits[ds]?.yoga).length
+  const totalOutdoorBike = weekDayStrings.filter((ds) => weeklyHabits[ds]?.outdoorBike).length
 
   const summaryCards = [
     { label: 'Lifts This Week', value: totalLifts, icon: <Dumbbell size={18} className="text-emerald-500" />, bg: 'bg-emerald-50' },
     { label: 'Peloton Sessions', value: totalPeloton, icon: <Bike size={18} className="text-blue-500" />, bg: 'bg-blue-50' },
     { label: 'Yoga Sessions', value: totalYoga, icon: <Sparkles size={18} className="text-violet-500" />, bg: 'bg-violet-50' },
+    { label: 'Outdoor Rides', value: totalOutdoorBike, icon: <Mountain size={18} className="text-orange-500" />, bg: 'bg-orange-50' },
   ]
 
   return (
     <div className="space-y-4 max-w-2xl">
       {/* Summary row */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {summaryCards.map(({ label, value, icon, bg }) => (
           <div key={label} className={`${bg} rounded-2xl px-4 py-3.5 flex items-center gap-3`}>
             {icon}
@@ -57,7 +59,7 @@ export function WeeklyView({ weeklyHabits, logs, onToggle }) {
         <div className="px-5 py-4 border-b border-slate-50">
           <h2 className="text-sm font-semibold text-slate-700">Weekly Habits</h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            Tap Peloton or Yoga to mark a session done
+            Tap to mark a session done for the day
           </p>
         </div>
 
@@ -68,13 +70,13 @@ export function WeeklyView({ weeklyHabits, logs, onToggle }) {
             const isPast = ds < todayIso
             const habits = weeklyHabits[ds] || {}
             const uniqueExercises = new Set(
-              logs.filter((l) => l.date === ds).map((l) => l.exerciseId),
+              logs.filter((l) => l.date === ds && l.type !== 'activity').map((l) => l.exerciseId),
             ).size
 
             return (
               <div
                 key={ds}
-                className={`flex items-center gap-3 px-5 py-3.5 ${isToday ? 'bg-emerald-50/40' : ''}`}
+                className={`flex flex-wrap items-center gap-2 px-5 py-3.5 ${isToday ? 'bg-emerald-50/40' : ''}`}
               >
                 {/* Day label */}
                 <div className="w-9 shrink-0">
@@ -93,7 +95,7 @@ export function WeeklyView({ weeklyHabits, logs, onToggle }) {
                 </div>
 
                 {/* Lift badge */}
-                <div className="flex-1 flex items-center gap-1.5">
+                <div className="flex-1 flex items-center gap-1.5 min-w-[80px]">
                   <Dumbbell
                     size={14}
                     className={uniqueExercises > 0 ? 'text-emerald-500' : 'text-slate-200'}
@@ -103,39 +105,54 @@ export function WeeklyView({ weeklyHabits, logs, onToggle }) {
                       {uniqueExercises} exercise{uniqueExercises > 1 ? 's' : ''}
                     </span>
                   ) : (
-                    <span className="text-xs text-slate-300">No lifts logged</span>
+                    <span className="text-xs text-slate-300">No lifts</span>
                   )}
                 </div>
 
-                {/* Peloton toggle */}
-                <button
-                  onClick={() => onToggle(ds, 'peloton')}
-                  className={[
-                    'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold',
-                    'transition-all duration-150',
-                    habits.peloton
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'bg-slate-50 text-slate-400 hover:bg-blue-50 hover:text-blue-500',
-                  ].join(' ')}
-                >
-                  <Bike size={13} />
-                  Peloton
-                </button>
+                {/* Habit toggles */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    onClick={() => onToggle(ds, 'peloton')}
+                    className={[
+                      'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold',
+                      'transition-all duration-150',
+                      habits.peloton
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'bg-slate-50 text-slate-400 hover:bg-blue-50 hover:text-blue-500',
+                    ].join(' ')}
+                  >
+                    <Bike size={13} />
+                    Peloton
+                  </button>
 
-                {/* Yoga toggle */}
-                <button
-                  onClick={() => onToggle(ds, 'yoga')}
-                  className={[
-                    'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold',
-                    'transition-all duration-150',
-                    habits.yoga
-                      ? 'bg-violet-100 text-violet-700'
-                      : 'bg-slate-50 text-slate-400 hover:bg-violet-50 hover:text-violet-500',
-                  ].join(' ')}
-                >
-                  <Sparkles size={13} />
-                  Yoga
-                </button>
+                  <button
+                    onClick={() => onToggle(ds, 'yoga')}
+                    className={[
+                      'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold',
+                      'transition-all duration-150',
+                      habits.yoga
+                        ? 'bg-violet-100 text-violet-700'
+                        : 'bg-slate-50 text-slate-400 hover:bg-violet-50 hover:text-violet-500',
+                    ].join(' ')}
+                  >
+                    <Sparkles size={13} />
+                    Yoga
+                  </button>
+
+                  <button
+                    onClick={() => onToggle(ds, 'outdoorBike')}
+                    className={[
+                      'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold',
+                      'transition-all duration-150',
+                      habits.outdoorBike
+                        ? 'bg-orange-100 text-orange-700'
+                        : 'bg-slate-50 text-slate-400 hover:bg-orange-50 hover:text-orange-500',
+                    ].join(' ')}
+                  >
+                    <Mountain size={13} />
+                    Outdoor Bike
+                  </button>
+                </div>
               </div>
             )
           })}
