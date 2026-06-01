@@ -2,7 +2,9 @@ import { useCallback } from 'react'
 import { usePGlite, useLiveQuery } from '@electric-sql/pglite-react'
 import { INITIAL_EXERCISES } from '../data/exercises'
 
-const todayStr = () => new Date().toISOString().split('T')[0]
+const localDateStr = (d = new Date()) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+const todayStr = () => localDateStr()
 
 // Stored as TEXT in DB: 'true', 'false', or a numeric string like '30'
 const parseHabitValue = (v) => {
@@ -64,7 +66,7 @@ export function useAppState() {
   const daysFromMonday = (dow + 6) % 7
   const thisMonday = new Date()
   thisMonday.setDate(thisMonday.getDate() - daysFromMonday)
-  const weekStartStr = thisMonday.toISOString().split('T')[0]
+  const weekStartStr = localDateStr(thisMonday)
   const daysExercisedThisWeek = new Set(
     logs.filter((l) => l.date >= weekStartStr && l.date <= today).map((l) => l.date),
   ).size

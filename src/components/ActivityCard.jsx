@@ -2,7 +2,10 @@ import { useState } from 'react'
 import { Check, Calendar } from 'lucide-react'
 
 
-const todayStr = () => new Date().toISOString().split('T')[0]
+const todayStr = () => {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
 
 const COLOR = {
   blue:   { badge: 'bg-blue-100 text-blue-700',     done: 'bg-blue-50 text-blue-600 hover:bg-blue-100'       },
