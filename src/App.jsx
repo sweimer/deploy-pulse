@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Calendar, CalendarDays, Dumbbell } from 'lucide-react'
+import { Calendar, CalendarDays, Check, Dumbbell } from 'lucide-react'
 import { useAppState } from './hooks/useAppState'
 import { Header } from './components/Header'
 import { ExerciseCard } from './components/ExerciseCard'
@@ -98,85 +98,45 @@ export default function App() {
 
             {/* ── Exercise cards ── */}
             <div className="flex-1 min-w-0 space-y-6 w-full">
-              {/* Out-of-Seat section */}
-              <section>
-                <SectionHeader
-                  dot="bg-emerald-400"
-                  label="Out-of-Seat Compound Lifts"
-                  subtitle="Priority — maximum muscle recruitment"
-                />
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                  {outOfSeat.map((ex) => (
-                    <ExerciseCard
-                      key={ex.id}
-                      exercise={ex}
-                      setsLoggedToday={setsPerExercise[ex.id] || 0}
-                      onLog={logExercise}
-                      onUpdate={updateExercise}
-                    />
-                  ))}
-                </div>
-              </section>
+              <ExerciseSection
+                dot="bg-emerald-400"
+                label="Out-of-Seat Compound Lifts"
+                subtitle="Priority — maximum muscle recruitment"
+                exercises={outOfSeat}
+                setsPerExercise={setsPerExercise}
+                onLog={logExercise}
+                onUpdate={updateExercise}
+              />
 
-              {/* Seated section */}
-              <section>
-                <SectionHeader
-                  dot="bg-amber-400"
-                  label="Seated at Desk Modifications"
-                  subtitle="When you can't leave your chair"
-                />
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                  {seated.map((ex) => (
-                    <ExerciseCard
-                      key={ex.id}
-                      exercise={ex}
-                      setsLoggedToday={setsPerExercise[ex.id] || 0}
-                      onLog={logExercise}
-                      onUpdate={updateExercise}
-                    />
-                  ))}
-                </div>
-              </section>
+              <ExerciseSection
+                dot="bg-amber-400"
+                label="Seated at Desk Modifications"
+                subtitle="When you can't leave your chair"
+                exercises={seated}
+                setsPerExercise={setsPerExercise}
+                onLog={logExercise}
+                onUpdate={updateExercise}
+              />
 
-              {/* Press & Raise section */}
-              <section>
-                <SectionHeader
-                  dot="bg-blue-400"
-                  label="Press & Raise"
-                  subtitle="Chest, full shoulder arc, posture correction"
-                />
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                  {pressRaise.map((ex) => (
-                    <ExerciseCard
-                      key={ex.id}
-                      exercise={ex}
-                      setsLoggedToday={setsPerExercise[ex.id] || 0}
-                      onLog={logExercise}
-                      onUpdate={updateExercise}
-                    />
-                  ))}
-                </div>
-              </section>
+              <ExerciseSection
+                dot="bg-blue-400"
+                label="Press & Raise"
+                subtitle="Chest, full shoulder arc, posture correction"
+                exercises={pressRaise}
+                setsPerExercise={setsPerExercise}
+                onLog={logExercise}
+                onUpdate={updateExercise}
+              />
 
-              {/* Bodyweight section */}
-              <section>
-                <SectionHeader
-                  dot="bg-slate-400"
-                  label="Bodyweight"
-                  subtitle="No equipment needed — anywhere, anytime"
-                />
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                  {bodyweightExercises.map((ex) => (
-                    <ExerciseCard
-                      key={ex.id}
-                      exercise={ex}
-                      setsLoggedToday={setsPerExercise[ex.id] || 0}
-                      onLog={logExercise}
-                      onUpdate={updateExercise}
-                    />
-                  ))}
-                </div>
-              </section>
+              <ExerciseSection
+                dot="bg-slate-400"
+                label="Bodyweight"
+                subtitle="No equipment needed — anywhere, anytime"
+                exercises={bodyweightExercises}
+                setsPerExercise={setsPerExercise}
+                onLog={logExercise}
+                onUpdate={updateExercise}
+              />
 
               {/* Cardio & Mobility section */}
               <section>
@@ -214,6 +174,46 @@ export default function App() {
       </main>
 
     </div>
+  )
+}
+
+function ExerciseSection({ dot, label, subtitle, exercises, setsPerExercise, onLog, onUpdate }) {
+  const active = exercises.filter((ex) => (setsPerExercise[ex.id] || 0) < (ex.totalSets || 3))
+  const done = exercises.filter((ex) => (setsPerExercise[ex.id] || 0) >= (ex.totalSets || 3))
+
+  return (
+    <section>
+      <SectionHeader dot={dot} label={label} subtitle={subtitle} />
+      {active.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          {active.map((ex) => (
+            <ExerciseCard
+              key={ex.id}
+              exercise={ex}
+              setsLoggedToday={setsPerExercise[ex.id] || 0}
+              onLog={onLog}
+              onUpdate={onUpdate}
+            />
+          ))}
+        </div>
+      )}
+      {done.length > 0 && (
+        <div className={`flex flex-wrap gap-2${active.length > 0 ? ' mt-2' : ''}`}>
+          {done.map((ex) => (
+            <DonePill key={ex.id} name={ex.name} />
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
+
+function DonePill({ name }) {
+  return (
+    <span className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-600 text-sm font-medium rounded-full px-3 py-1.5">
+      <Check size={12} strokeWidth={2.5} />
+      {name}
+    </span>
   )
 }
 
