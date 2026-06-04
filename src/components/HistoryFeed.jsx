@@ -13,7 +13,7 @@ const ACTIVITY_STYLE = {
 }
 
 export function HistoryFeed({ todayLogs, totalActiveMinutes }) {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
   const empty = todayLogs.length === 0
 
   return (

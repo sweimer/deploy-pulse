@@ -41,6 +41,14 @@ export async function initDB() {
     );
   `)
 
+  // Seed bucket rotation state — safe to run every init (ON CONFLICT DO NOTHING)
+  await db.exec(`
+    INSERT INTO app_meta (key, value) VALUES ('current_bucket', 'push') ON CONFLICT DO NOTHING;
+    INSERT INTO app_meta (key, value) VALUES ('last_active_date', '') ON CONFLICT DO NOTHING;
+  `)
+
+  // One-time migration from localStorage — runs before exercise seeding so that
+  // saved user values (weight, targetReps) take priority over defaults
   const { rows } = await db.query(
     "SELECT value FROM app_meta WHERE key = 'migrated'",
   )
@@ -49,6 +57,16 @@ export async function initDB() {
     await migrateFromLocalStorage(db)
     await db.query("INSERT INTO app_meta (key, value) VALUES ('migrated', 'true')")
     localStorage.removeItem(LEGACY_KEY)
+  }
+
+  // Seed prefs for any exercises not yet in the DB — handles exercises added
+  // in app updates for returning users. DO NOTHING preserves saved user prefs.
+  for (const ex of INITIAL_EXERCISES) {
+    await db.query(
+      `INSERT INTO exercise_prefs (id, weight, target_reps) VALUES ($1, $2, $3)
+       ON CONFLICT (id) DO NOTHING`,
+      [ex.id, ex.weight ?? 0, ex.targetReps ?? 10],
+    )
   }
 
   return db
@@ -63,7 +81,7 @@ async function migrateFromLocalStorage(db) {
     // ignore corrupt data
   }
 
-  // Seed exercise prefs — always, even without prior localStorage data
+  // Seed exercise prefs — overlay any saved weight/reps from localStorage
   for (const ex of INITIAL_EXERCISES) {
     const savedEx = (saved?.exercises ?? []).find((e) => e.id === ex.id)
     await db.query(

@@ -25,6 +25,7 @@ export function ExerciseCard({ exercise, setsLoggedToday, onLog, onUpdate }) {
   const cat = CATEGORY[exercise.category]
   const totalSets = exercise.totalSets || 3
   const allDone = setsLoggedToday >= totalSets
+  const isHold = exercise.unit === 'sec'
 
   return (
     <div
@@ -70,7 +71,7 @@ export function ExerciseCard({ exercise, setsLoggedToday, onLog, onUpdate }) {
         <p className="text-xs text-slate-400 mt-0.5 mb-3">{exercise.muscles.join(' · ')}</p>
 
         {/* Weight + Reps controls */}
-        <div className="flex gap-2 mb-3">
+        <div className="flex flex-col gap-2 mb-3">
           {/* LBS — hidden for bodyweight exercises */}
           {!exercise.bodyweight && (
             <label className="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl px-3 py-2 flex-1 transition-colors cursor-pointer">
@@ -88,16 +89,19 @@ export function ExerciseCard({ exercise, setsLoggedToday, onLog, onUpdate }) {
             </label>
           )}
 
-          {/* REPS — free number input, 1–50 */}
+          {/* REPS / SEC — adjustable per-exercise unit */}
           <label className="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl px-3 py-2 flex-1 transition-colors cursor-text">
-            <span className="text-[17px] font-semibold text-slate-400 shrink-0">REPS</span>
+            <span className="text-[17px] font-semibold text-slate-400 shrink-0">{isHold ? 'SEC' : 'REPS'}</span>
             <input
               type="number"
-              min={1}
-              max={50}
-              step={1}
+              min={isHold ? 5 : 1}
+              max={isHold ? 120 : 50}
+              step={isHold ? 5 : 1}
               value={exercise.targetReps}
-              onChange={(e) => onUpdate(exercise.id, { targetReps: Math.min(50, Math.max(1, parseInt(e.target.value) || 1)) })}
+              onChange={(e) => {
+                const [lo, hi] = isHold ? [5, 120] : [1, 50]
+                onUpdate(exercise.id, { targetReps: Math.min(hi, Math.max(lo, parseInt(e.target.value) || lo)) })
+              }}
               onFocus={(e) => e.target.select()}
               onClick={(e) => e.stopPropagation()}
               className="w-full bg-transparent text-sm font-bold text-slate-700 outline-none text-right"
@@ -106,7 +110,7 @@ export function ExerciseCard({ exercise, setsLoggedToday, onLog, onUpdate }) {
         </div>
 
         {/* Set buttons — one per set, log directly on click */}
-        <div className="mt-auto flex gap-1.5">
+        <div className="mt-auto flex flex-col gap-1.5">
           {Array.from({ length: totalSets }, (_, i) => i + 1).map((setNum) => {
             const done = setsLoggedToday >= setNum
             return (

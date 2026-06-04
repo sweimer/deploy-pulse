@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, Calendar } from 'lucide-react'
+import { Check } from 'lucide-react'
 
 
 const todayStr = () => {
@@ -16,11 +16,11 @@ const COLOR = {
 
 export function ActivityCard({ activityKey, name, label, gifUrl, color, weeklyHabits, onLog }) {
   const [durationStr, setDurationStr] = useState('30')
-  const [date, setDate] = useState(todayStr())
 
+  const today = todayStr()
   const parsedDuration = Math.min(300, Math.max(1, parseInt(durationStr) || 1))
 
-  const loggedValue = weeklyHabits[date]?.[activityKey]
+  const loggedValue = weeklyHabits[today]?.[activityKey]
   const isCompleted = Boolean(loggedValue)
   const c = COLOR[color] || COLOR.blue
 
@@ -60,11 +60,11 @@ export function ActivityCard({ activityKey, name, label, gifUrl, color, weeklyHa
 
         {/* Name */}
         <h3 className="text-[21px] font-semibold text-slate-800 leading-snug">{name}</h3>
-        <p className="text-xs text-slate-400 mt-0.5 mb-3">Duration · Date</p>
+        <p className="text-xs text-slate-400 mt-0.5 mb-3">Duration</p>
 
-        {/* Duration + Date controls */}
-        <div className="flex gap-2 mb-3">
-          <label className="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl px-3 py-2 flex-1 transition-colors cursor-text">
+        {/* Duration control */}
+        <div className="mb-3">
+          <label className="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl px-3 py-2 transition-colors cursor-text">
             <span className="text-[17px] font-semibold text-slate-400 shrink-0">MIN</span>
             <input
               type="text"
@@ -78,23 +78,11 @@ export function ActivityCard({ activityKey, name, label, gifUrl, color, weeklyHa
               className="w-full bg-transparent text-sm font-bold text-slate-700 outline-none text-right"
             />
           </label>
-
-          <label className="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 rounded-xl px-3 py-2 flex-1 transition-colors cursor-pointer">
-            <Calendar size={14} className="text-slate-400 shrink-0" />
-            <input
-              type="date"
-              max={todayStr()}
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full bg-transparent text-sm font-bold text-slate-700 outline-none text-right cursor-pointer"
-            />
-          </label>
         </div>
 
         {/* Mark Complete button */}
         <button
-          onClick={() => onLog(date, activityKey, parsedDuration, name)}
+          onClick={() => onLog(today, activityKey, parsedDuration, name)}
           className={[
             'mt-auto w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold',
             'transition-all duration-150 active:scale-[0.98]',
@@ -104,7 +92,7 @@ export function ActivityCard({ activityKey, name, label, gifUrl, color, weeklyHa
           ].join(' ')}
         >
           <Check size={13} strokeWidth={2.5} />
-          {isCompleted ? 'Logged — Update' : 'Mark Complete'}
+          {isCompleted ? 'Logged — Update' : 'Done'}
         </button>
       </div>
     </div>

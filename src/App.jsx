@@ -21,7 +21,9 @@ export default function App() {
   const [tab, setTab] = useState('today')
 
   const {
-    exercises,
+    bucketExercises,
+    bucketLabel,
+    bucketData,
     logs,
     weeklyHabits,
     updateExercise,
@@ -42,11 +44,6 @@ export default function App() {
       return acc
     }, {})
 
-  const outOfSeat = exercises.filter((e) => e.category === 'out-of-seat')
-  const seated = exercises.filter((e) => e.category === 'seated')
-  const pressRaise = exercises.filter((e) => e.category === 'press-raise')
-  const bodyweightExercises = exercises.filter((e) => e.category === 'bodyweight')
-
   const tabs = [
     { id: 'today', label: 'Today', icon: <Dumbbell size={14} /> },
     { id: 'week', label: 'This Week', icon: <Calendar size={14} /> },
@@ -58,7 +55,7 @@ export default function App() {
       <Header
         daysExercisedThisWeek={daysExercisedThisWeek}
         exercisesCompletedToday={exercisesCompletedToday}
-        totalExercises={exercises.length}
+        totalExercises={bucketExercises.length}
         totalActiveMinutes={totalActiveMinutes}
       />
 
@@ -99,40 +96,10 @@ export default function App() {
             {/* ── Exercise cards ── */}
             <div className="flex-1 min-w-0 space-y-6 w-full">
               <ExerciseSection
-                dot="bg-emerald-400"
-                label="Out-of-Seat Compound Lifts"
-                subtitle="Priority — maximum muscle recruitment"
-                exercises={outOfSeat}
-                setsPerExercise={setsPerExercise}
-                onLog={logExercise}
-                onUpdate={updateExercise}
-              />
-
-              <ExerciseSection
-                dot="bg-amber-400"
-                label="Seated at Desk Modifications"
-                subtitle="When you can't leave your chair"
-                exercises={seated}
-                setsPerExercise={setsPerExercise}
-                onLog={logExercise}
-                onUpdate={updateExercise}
-              />
-
-              <ExerciseSection
-                dot="bg-blue-400"
-                label="Press & Raise"
-                subtitle="Chest, full shoulder arc, posture correction"
-                exercises={pressRaise}
-                setsPerExercise={setsPerExercise}
-                onLog={logExercise}
-                onUpdate={updateExercise}
-              />
-
-              <ExerciseSection
-                dot="bg-slate-400"
-                label="Bodyweight"
-                subtitle="No equipment needed — anywhere, anytime"
-                exercises={bodyweightExercises}
+                dot={bucketData?.dot ?? 'bg-slate-400'}
+                label={`Today's Focus: ${bucketLabel}`}
+                subtitle={bucketData?.subtitle ?? ''}
+                exercises={bucketExercises}
                 setsPerExercise={setsPerExercise}
                 onLog={logExercise}
                 onUpdate={updateExercise}
@@ -145,7 +112,7 @@ export default function App() {
                   label="Cardio & Mobility"
                   subtitle="Log rides and yoga — pick a date to backfill"
                 />
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3">
                   {ACTIVITIES.map((a) => (
                     <ActivityCard
                       key={a.activityKey}
@@ -185,7 +152,7 @@ function ExerciseSection({ dot, label, subtitle, exercises, setsPerExercise, onL
     <section>
       <SectionHeader dot={dot} label={label} subtitle={subtitle} />
       {active.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {active.map((ex) => (
             <ExerciseCard
               key={ex.id}

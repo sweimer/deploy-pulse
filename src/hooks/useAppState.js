@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { usePGlite, useLiveQuery } from '@electric-sql/pglite-react'
-import { INITIAL_EXERCISES } from '../data/exercises'
+import { INITIAL_EXERCISES, BUCKETS } from '../data/exercises'
+import { useBucketRotation } from './useBucketRotation'
 
 const localDateStr = (d = new Date()) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -21,12 +22,18 @@ export function useAppState() {
   const prefsResult = useLiveQuery('SELECT * FROM exercise_prefs')
   const habitsResult = useLiveQuery('SELECT * FROM habits')
 
+  const currentBucket = useBucketRotation()
+  const bucketData = BUCKETS[currentBucket]
+
   // Merge user prefs onto canonical exercise definitions
   const prefsMap = new Map((prefsResult?.rows ?? []).map((r) => [r.id, r]))
   const exercises = INITIAL_EXERCISES.map((ex) => {
     const pref = prefsMap.get(ex.id)
     return pref ? { ...ex, weight: pref.weight, targetReps: pref.target_reps } : ex
   })
+
+  const exercisesById = new Map(exercises.map((ex) => [ex.id, ex]))
+  const bucketExercises = (bucketData?.exerciseIds ?? []).map((id) => exercisesById.get(id)).filter(Boolean)
 
   // Reconstruct weeklyHabits shape { [date]: { [habitKey]: boolean | number } }
   const weeklyHabits = {}
@@ -53,8 +60,10 @@ export function useAppState() {
   const today = todayStr()
   const todayLogs = logs.filter((l) => l.date === today)
 
+  // Count unique bucket exercises completed today (drives the progress ring)
+  const bucketExerciseIds = new Set(bucketData?.exerciseIds ?? [])
   const exercisesCompletedToday = new Set(
-    todayLogs.filter((l) => l.type !== 'activity').map((l) => l.exerciseId),
+    todayLogs.filter((l) => l.type !== 'activity' && bucketExerciseIds.has(l.exerciseId)).map((l) => l.exerciseId),
   ).size
 
   const totalActiveMinutes = todayLogs.reduce(
@@ -131,6 +140,10 @@ export function useAppState() {
 
   return {
     exercises,
+    bucketExercises,
+    currentBucket,
+    bucketLabel: bucketData?.label ?? 'Push',
+    bucketData,
     logs,
     weeklyHabits,
     updateExercise,
