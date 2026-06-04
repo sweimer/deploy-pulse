@@ -14,8 +14,8 @@ const COLOR = {
   teal:   { badge: 'bg-teal-100 text-teal-700',     done: 'bg-teal-50 text-teal-600 hover:bg-teal-100'       },
 }
 
-export function ActivityCard({ activityKey, name, label, gifUrl, color, weeklyHabits, onLog }) {
-  const [durationStr, setDurationStr] = useState('30')
+export function ActivityCard({ activityKey, name, label, gifUrl, color, defaultDuration = 30, weeklyHabits, onLog }) {
+  const [durationStr, setDurationStr] = useState(String(defaultDuration))
 
   const today = todayStr()
   const parsedDuration = Math.min(300, Math.max(1, parseInt(durationStr) || 1))

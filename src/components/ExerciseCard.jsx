@@ -19,7 +19,7 @@ const CATEGORY = {
   },
 }
 
-const WEIGHT_OPTIONS = [20, 25, 30, 35, 40, 45, 50]
+const WEIGHT_OPTIONS = [0, 5, 10, 20, 25, 30, 35, 40, 45, 50]
 
 export function ExerciseCard({ exercise, setsLoggedToday, onLog, onUpdate }) {
   const cat = CATEGORY[exercise.category]

@@ -11,10 +11,10 @@ import { CalendarView } from './components/CalendarView'
 const GIF_BASE = 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0'
 
 const ACTIVITIES = [
-  { activityKey: 'yoga',        name: 'Yoga',           label: '✨ Yoga',      color: 'violet', gifUrl: `${GIF_BASE}/spine/upward-facing-dog.gif`                  },
-  { activityKey: 'walk',        name: 'Walk',           label: '🚶 Walk',      color: 'teal',   gifUrl: `${GIF_BASE}/cardio/walking-on-incline-treadmill.gif`      },
-  { activityKey: 'peloton',     name: 'Peloton Ride',   label: '🚴 Peloton',  color: 'blue',   gifUrl: `${GIF_BASE}/cardio/stationary-bike-run-v-3.gif`           },
-  { activityKey: 'outdoorBike', name: 'Outdoor Bike',   label: '⛰️ Outdoor',  color: 'orange', gifUrl: `${GIF_BASE}/cardio/cycle-cross-trainer.gif`              },
+  { activityKey: 'yoga',        name: 'Yoga',           label: '✨ Yoga',      color: 'violet', defaultDuration: 15,  gifUrl: `${GIF_BASE}/spine/upward-facing-dog.gif`                  },
+  { activityKey: 'walk',        name: 'Walk',           label: '🚶 Walk',      color: 'teal',   defaultDuration: 20,  gifUrl: `${GIF_BASE}/cardio/walking-on-incline-treadmill.gif`      },
+  { activityKey: 'peloton',     name: 'Peloton Ride',   label: '🚴 Peloton',  color: 'blue',   defaultDuration: 20,  gifUrl: `${GIF_BASE}/cardio/stationary-bike-run-v-3.gif`           },
+  { activityKey: 'outdoorBike', name: 'Outdoor Bike',   label: '⛰️ Outdoor',  color: 'orange', defaultDuration: 60,  gifUrl: `${GIF_BASE}/cardio/cycle-cross-trainer.gif`              },
 ]
 
 export default function App() {
@@ -110,7 +110,7 @@ export default function App() {
                 <SectionHeader
                   dot="bg-sky-400"
                   label="Cardio & Mobility"
-                  subtitle="Log rides and yoga — pick a date to backfill"
+                  subtitle="Log rides, walks and yoga"
                 />
                 <div className="grid grid-cols-2 gap-3">
                   {ACTIVITIES.map((a) => (
