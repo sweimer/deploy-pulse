@@ -240,7 +240,7 @@ export const INITIAL_EXERCISES = [
     targetReps: 10,
     totalSets: 3,
     muscles: ['Quads', 'Glutes', 'Shoulders', 'Obliques'],
-    gifUrl: null,
+    gifUrl: `${GIF_BASE}/quads/squat-to-overhead-reach-with-twist.gif`,
     formTip:
       'Stand feet shoulder-width, one dumbbell held at your right shoulder. Squat down — chest tall, knees tracking toes, weight in heels. As you drive back to stand, rotate your torso left and press the dumbbell overhead. Return it to the starting shoulder as you lower into the next squat. Complete all reps on one side, then switch. The rotation comes from your core, not just your arm.',
   },
@@ -318,7 +318,7 @@ export const INITIAL_EXERCISES = [
     targetReps: 15,
     totalSets: 3,
     muscles: ['Glutes', 'Hamstrings', 'Core'],
-    gifUrl: null,
+    gifUrl: `${GIF_BASE}/glutes/kettlebell-swing.gif`,
     formTip:
       'Stand with feet shoulder-width, dumbbell held in both hands in front of you. Hinge at the hips — not a squat — pushing them back as the dumbbell swings between your legs. Drive your hips forward explosively to swing the dumbbell up to chest height. Let gravity bring it back down and flow into the next rep. Power comes from the hip drive, not your arms. Keep your spine neutral throughout.',
   },
