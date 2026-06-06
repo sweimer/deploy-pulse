@@ -232,6 +232,18 @@ export const INITIAL_EXERCISES = [
     formTip:
       'Back flat against the wall, feet hip-width and 12 inches in front of you. Slide down until thighs are parallel to the floor and shins are vertical — 90° at the knee. Arms resting on thighs or crossed on chest. Hold for the full duration without pushing off your thighs. If knees ache, raise your position slightly.',
   },
+  {
+    id: 'rotating-squat-to-press',
+    name: 'Rotating Squat to Press',
+    category: 'out-of-seat',
+    weight: 15,
+    targetReps: 10,
+    totalSets: 3,
+    muscles: ['Quads', 'Glutes', 'Shoulders', 'Obliques'],
+    gifUrl: null,
+    formTip:
+      'Stand feet shoulder-width, one dumbbell held at your right shoulder. Squat down — chest tall, knees tracking toes, weight in heels. As you drive back to stand, rotate your torso left and press the dumbbell overhead. Return it to the starting shoulder as you lower into the next squat. Complete all reps on one side, then switch. The rotation comes from your core, not just your arm.',
+  },
 
   // ── Core bucket ────────────────────────────────────────────────────────────
   {
@@ -350,8 +362,8 @@ export const BUCKETS = {
       'romanian-deadlift',
       'calf-raise',
       'hip-hinge',
-      'glute-bridge',
-      'wall-sit',
+      'dumbbell-swing',
+      'rotating-squat-to-press',
     ],
   },
   core: {
