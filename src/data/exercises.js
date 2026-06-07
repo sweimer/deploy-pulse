@@ -294,7 +294,7 @@ export const INITIAL_EXERCISES = [
     targetReps: 10,
     totalSets: 3,
     muscles: ['Obliques', 'Core', 'Shoulders'],
-    gifUrl: null,
+    gifUrl: `${GIF_BASE}/abs/cable-twist-up-down.gif`,
     formTip:
       'Stand with feet shoulder-width, holding one dumbbell with both hands. Start with the weight above one shoulder, arms nearly straight. Rotate your torso and swing the dumbbell diagonally across your body toward the opposite hip — like chopping wood. Control the return, do not just let it swing back. Keep knees soft throughout. Complete all reps on one side before switching.',
   },
