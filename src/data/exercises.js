@@ -361,7 +361,7 @@ export const BUCKETS = {
       'goblet-squat',
       'romanian-deadlift',
       'calf-raise',
-      'hip-hinge',
+      'wall-sit',
       'dumbbell-swing',
       'rotating-squat-to-press',
     ],
