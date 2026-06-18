@@ -143,7 +143,6 @@ export function useAppState(bucketOverride = null) {
     exercises,
     bucketExercises,
     currentBucket,
-    bucketLabel: bucketData?.label ?? 'Push',
     bucketData,
     logs,
     weeklyHabits,

@@ -163,7 +163,7 @@ function ExerciseSection({ dot, subtitle, exercises, setsPerExercise, onLog, onU
             <select
               value={bucketKey}
               onChange={(e) => onBucketChange(e.target.value)}
-              className="text-xs font-bold text-slate-500 uppercase tracking-wider bg-transparent border-none outline-none cursor-pointer hover:text-slate-700"
+              className="text-xs font-bold text-slate-500 uppercase tracking-wider bg-transparent border-none outline-none appearance-none cursor-pointer hover:text-slate-700"
             >
               {BUCKET_ORDER.map((key) => (
                 <option key={key} value={key}>
