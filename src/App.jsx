@@ -148,7 +148,7 @@ export default function App() {
             onToggle={toggleWeeklyHabit}
           />
         ) : tab === 'recap' ? (
-          <RecapView logs={logs} />
+          <RecapView logs={logs} weeklyHabits={weeklyHabits} />
         ) : (
           <CoachView logs={logs} weeklyHabits={weeklyHabits} />
         )}

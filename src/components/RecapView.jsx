@@ -19,7 +19,14 @@ function formatDayHeader(dateStr) {
   })
 }
 
-export function RecapView({ logs }) {
+const CARDIO = {
+  yoga:        'Yoga',
+  walk:        'Walk',
+  peloton:     'Peloton Ride',
+  outdoorBike: 'Outdoor Bike',
+}
+
+export function RecapView({ logs, weeklyHabits }) {
   const now = new Date()
   const year = now.getFullYear()
   const month = now.getMonth()
@@ -43,8 +50,16 @@ export function RecapView({ logs }) {
   return (
     <div className="space-y-5">
       {days.map((dateStr) => {
-        const entries = byDay[dateStr] ? Object.values(byDay[dateStr]) : []
+        const exercises = byDay[dateStr] ? Object.values(byDay[dateStr]) : []
+        const habits = weeklyHabits[dateStr] || {}
+        const cardio = Object.entries(CARDIO).flatMap(([key, label]) => {
+          const val = habits[key]
+          if (!val) return []
+          const detail = typeof val === 'number' && val > 0 ? ` — ${val} min` : ''
+          return [label + detail]
+        })
         const isToday = dateStr === today
+        const isEmpty = exercises.length === 0 && cardio.length === 0
 
         return (
           <div key={dateStr}>
@@ -59,18 +74,23 @@ export function RecapView({ logs }) {
               )}
             </div>
             <div className="pl-3 border-l-2 border-slate-100 space-y-1">
-              {entries.length > 0 ? (
-                entries.map((entry, i) => (
-                  <p key={i} className="text-sm text-slate-700">
-                    <span className="font-medium">{entry.name}</span>
-                    <span className="text-slate-400">
-                      {' '}— {entry.sets} {entry.sets === 1 ? 'set' : 'sets'} × {entry.reps} reps
-                      {entry.weight > 0 ? ` @ ${entry.weight} lbs` : ''}
-                    </span>
-                  </p>
-                ))
+              {isEmpty ? (
+                <p className="text-[17px] text-slate-300">Rest day</p>
               ) : (
-                <p className="text-sm text-slate-300">Rest day</p>
+                <>
+                  {exercises.map((entry, i) => (
+                    <p key={i} className="text-[17px] text-slate-700">
+                      <span className="font-medium">{entry.name}</span>
+                      <span className="text-slate-400">
+                        {' '}— {entry.sets} {entry.sets === 1 ? 'set' : 'sets'} × {entry.reps} reps
+                        {entry.weight > 0 ? ` @ ${entry.weight} lbs` : ''}
+                      </span>
+                    </p>
+                  ))}
+                  {cardio.map((label, i) => (
+                    <p key={i} className="text-[17px] text-sky-600">{label}</p>
+                  ))}
+                </>
               )}
             </div>
           </div>
