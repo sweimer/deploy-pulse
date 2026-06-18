@@ -575,6 +575,7 @@ export const BUCKETS = {
     subtitle: 'Pressing and shoulder strength',
     dot: 'bg-blue-400',
     exerciseIds: [
+      'kettlebell-halo',
       'seated-overhead-press',
       'hammer-curl-to-press',
       'seated-tricep-extension',
@@ -583,7 +584,6 @@ export const BUCKETS = {
       'push-up',
       'kettlebell-arnold-press',
       'kettlebell-one-arm-floor-press',
-      'kettlebell-halo',
       'kettlebell-thruster',
     ],
   },
