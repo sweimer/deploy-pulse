@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Calendar, CalendarDays, Check, Dumbbell } from 'lucide-react'
+import { Calendar, CalendarDays, Check, ClipboardList, Dumbbell } from 'lucide-react'
 import { useAppState } from './hooks/useAppState'
 import { BUCKETS, BUCKET_ORDER } from './data/exercises'
 import { Header } from './components/Header'
@@ -8,6 +8,7 @@ import { ActivityCard } from './components/ActivityCard'
 import { HistoryFeed } from './components/HistoryFeed'
 import { WeeklyView } from './components/WeeklyView'
 import { CalendarView } from './components/CalendarView'
+import { RecapView } from './components/RecapView'
 
 const GIF_BASE = 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0'
 
@@ -50,6 +51,7 @@ export default function App() {
     { id: 'today', label: 'Today', icon: <Dumbbell size={14} /> },
     { id: 'week', label: 'This Week', icon: <Calendar size={14} /> },
     { id: 'calendar', label: 'This Month', icon: <CalendarDays size={14} /> },
+    { id: 'recap', label: 'Recap', icon: <ClipboardList size={14} /> },
   ]
 
   return (
@@ -134,12 +136,14 @@ export default function App() {
             logs={logs}
             onToggle={toggleWeeklyHabit}
           />
-        ) : (
+        ) : tab === 'calendar' ? (
           <CalendarView
             logs={logs}
             weeklyHabits={weeklyHabits}
             onToggle={toggleWeeklyHabit}
           />
+        ) : (
+          <RecapView logs={logs} />
         )}
       </main>
 
