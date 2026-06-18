@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Calendar, CalendarDays, Check, Dumbbell } from 'lucide-react'
 import { useAppState } from './hooks/useAppState'
+import { BUCKETS, BUCKET_ORDER } from './data/exercises'
 import { Header } from './components/Header'
 import { ExerciseCard } from './components/ExerciseCard'
 import { ActivityCard } from './components/ActivityCard'
@@ -19,10 +20,11 @@ const ACTIVITIES = [
 
 export default function App() {
   const [tab, setTab] = useState('today')
+  const [bucketOverride, setBucketOverride] = useState(null)
 
   const {
     bucketExercises,
-    bucketLabel,
+    currentBucket,
     bucketData,
     logs,
     weeklyHabits,
@@ -34,7 +36,7 @@ export default function App() {
     exercisesCompletedToday,
     totalActiveMinutes,
     daysExercisedThisWeek,
-  } = useAppState()
+  } = useAppState(bucketOverride)
 
   // Sum of sets logged today per exercise (activity logs excluded)
   const setsPerExercise = todayLogs
@@ -97,12 +99,13 @@ export default function App() {
             <div className="flex-1 min-w-0 space-y-6 w-full">
               <ExerciseSection
                 dot={bucketData?.dot ?? 'bg-slate-400'}
-                label={`Today's Focus: ${bucketLabel}`}
                 subtitle={bucketData?.subtitle ?? ''}
                 exercises={bucketExercises}
                 setsPerExercise={setsPerExercise}
                 onLog={logExercise}
                 onUpdate={updateExercise}
+                bucketKey={currentBucket}
+                onBucketChange={setBucketOverride}
               />
 
               {/* Cardio & Mobility section */}
@@ -144,13 +147,36 @@ export default function App() {
   )
 }
 
-function ExerciseSection({ dot, label, subtitle, exercises, setsPerExercise, onLog, onUpdate }) {
+function ExerciseSection({ dot, subtitle, exercises, setsPerExercise, onLog, onUpdate, bucketKey, onBucketChange }) {
   const active = exercises.filter((ex) => (setsPerExercise[ex.id] || 0) < (ex.totalSets || 3))
   const done = exercises.filter((ex) => (setsPerExercise[ex.id] || 0) >= (ex.totalSets || 3))
 
   return (
     <section>
-      <SectionHeader dot={dot} label={label} subtitle={subtitle} />
+      <div className="flex items-center gap-2 mb-3">
+        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
+        <div>
+          <div className="flex items-center gap-1 leading-none">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Today's Focus:
+            </span>
+            <select
+              value={bucketKey}
+              onChange={(e) => onBucketChange(e.target.value)}
+              className="text-xs font-bold text-slate-500 uppercase tracking-wider bg-transparent border-none outline-none cursor-pointer hover:text-slate-700"
+            >
+              {BUCKET_ORDER.map((key) => (
+                <option key={key} value={key}>
+                  {BUCKETS[key].label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {subtitle && (
+            <p className="text-[17px] text-slate-400 mt-0.5">{subtitle}</p>
+          )}
+        </div>
+      </div>
       {active.length > 0 && (
         <div className="grid grid-cols-2 gap-3">
           {active.map((ex) => (
