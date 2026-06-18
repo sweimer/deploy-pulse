@@ -682,6 +682,7 @@ export const BUCKETS = {
     subtitle: 'Spine stability and abdominal strength',
     dot: 'bg-slate-400',
     exerciseIds: [
+      'kettlebell-halo',
       'sit-up',
       'plank-hold',
       'russian-twist',
@@ -690,7 +691,6 @@ export const BUCKETS = {
       'dumbbell-swing',
       'kettlebell-windmill',
       'kettlebell-figure-8',
-      'dead-bug',
       'mountain-climber',
     ],
   },
