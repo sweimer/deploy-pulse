@@ -440,6 +440,48 @@ export const INITIAL_EXERCISES = [
       'Lie on your back, knees bent, feet flat and hip-width. Extend one leg straight out. Drive through the heel of the planted foot to raise your hips until your body forms a straight line from shoulder to knee to raised foot. Squeeze your glute hard at the top — hold 2 seconds. Lower with control. If your hips dip or rotate, switch back to both legs. Complete all reps on one side before switching.',
   },
 
+  {
+    id: 'lateral-lunge',
+    name: 'Lateral Lunge',
+    category: 'out-of-seat',
+    bodyweight: true,
+    weight: 0,
+    targetReps: 10,
+    totalSets: 3,
+    muscles: ['Quads', 'Glutes', 'Adductors'],
+    gifUrl: `${GIF_BASE}/glutes/barbell-lateral-lunge.gif`,
+    videoUrl: 'https://www.youtube.com/watch?v=txEpV6xhjqQ',
+    formTip:
+      'Stand with feet together. Take a wide step directly to one side, keeping your toes pointing forward. Bend the stepping knee and push your hips back as you lower — the trailing leg stays straight. Your weight is in the heel of the bent leg. Return to standing by pushing off the bent leg. Keep your chest tall and back flat throughout. If you feel your knee caving inward, step out wider and sit back more before bending.',
+  },
+  {
+    id: 'sumo-squat',
+    name: 'Sumo Squat',
+    category: 'out-of-seat',
+    weight: 20,
+    targetReps: 12,
+    totalSets: 3,
+    muscles: ['Quads', 'Glutes', 'Adductors'],
+    gifUrl: `${GIF_BASE}/glutes/smith-sumo-squat.gif`,
+    videoUrl: 'https://www.youtube.com/watch?v=TxR7e-MWBPM',
+    formTip:
+      'Stand with feet wider than shoulder-width, toes turned out 30–45°. Hold a dumbbell or KB vertically at your chest or between your legs. Brace your core, chest tall. Squat straight down between your legs — knees track over your toes throughout. At the bottom your thighs should be at least parallel to the floor. Drive through both heels to stand, squeezing your glutes at the top. The wide stance shifts emphasis to the inner thighs and glutes compared to a standard squat.',
+  },
+  {
+    id: 'jump-squat',
+    name: 'Jump Squat',
+    category: 'bodyweight',
+    bodyweight: true,
+    weight: 0,
+    targetReps: 10,
+    totalSets: 3,
+    muscles: ['Quads', 'Glutes', 'Calves'],
+    gifUrl: `${GIF_BASE}/glutes/jump-squat.gif`,
+    videoUrl: 'https://www.youtube.com/watch?v=pEHfpDjWqZQ',
+    formTip:
+      'Stand with feet shoulder-width apart. Squat down to roughly parallel — chest tall, hips back — then explode upward as hard as you can, leaving the ground completely. Land softly with bent knees to absorb impact, rolling from toe to heel. Go immediately into the next rep. Land quietly: loud landings mean you are absorbing with your joints instead of your muscles. If your knees ache, reduce depth to a quarter-squat until your landing mechanics improve.',
+  },
+
   // ── Core bucket ────────────────────────────────────────────────────────────
   {
     id: 'sit-up',
@@ -630,6 +672,9 @@ export const BUCKETS = {
       'wall-sit',
       'dumbbell-swing',
       'rotating-squat-to-press',
+      'lateral-lunge',
+      'sumo-squat',
+      'jump-squat',
     ],
   },
   core: {
