@@ -235,6 +235,19 @@ export const INITIAL_EXERCISES = [
       'Stand holding dumbbells in front of your thighs, palms facing you. Pull both weights straight up along your body — lead with the elbows, not the hands — until they reach chin height. Elbows should flare out and end above wrist level at the top. Lower with control back to the start. Keep the movement vertical and close to your body throughout. Avoid shrugging your shoulders up at the top. If you feel shoulder impingement, reduce range so elbows stop at shoulder height rather than chin height.',
   },
   {
+    id: 'kettlebell-upright-row',
+    name: 'KB Upright Row',
+    category: 'out-of-seat',
+    weight: 20,
+    targetReps: 10,
+    totalSets: 3,
+    muscles: ['Traps', 'Shoulders', 'Biceps'],
+    gifUrl: `${GIF_BASE}/delts/dumbbell-upright-row.gif`,
+    videoUrl: 'https://www.youtube.com/watch?v=KEKdHTI8V3c',
+    formTip:
+      'Hold the KB by the handle in front of your thighs, palm facing you. Pull it straight up along your body — lead with the elbows, not the hands — until they reach chin height and flare out above wrist level. Keep the movement close to your body throughout. Lower with control. Avoid shrugging your shoulders at the top; the elbows driving up does the work. If you feel shoulder impingement, stop the pull at shoulder height rather than chin height.',
+  },
+  {
     id: 'kettlebell-sumo-high-pull',
     name: 'KB Sumo High Pull',
     category: 'out-of-seat',
@@ -602,6 +615,7 @@ export const BUCKETS = {
       'kettlebell-windmill',
       'kettlebell-sumo-high-pull',
       'kettlebell-one-arm-row',
+      'kettlebell-upright-row',
     ],
   },
   legs: {
