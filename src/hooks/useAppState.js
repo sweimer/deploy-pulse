@@ -15,14 +15,15 @@ const parseHabitValue = (v) => {
   return isNaN(n) ? false : n
 }
 
-export function useAppState() {
+export function useAppState(bucketOverride = null) {
   const db = usePGlite()
 
   const logsResult = useLiveQuery('SELECT * FROM logs ORDER BY timestamp ASC')
   const prefsResult = useLiveQuery('SELECT * FROM exercise_prefs')
   const habitsResult = useLiveQuery('SELECT * FROM habits')
 
-  const currentBucket = useBucketRotation()
+  const autoBucket = useBucketRotation()
+  const currentBucket = bucketOverride ?? autoBucket
   const bucketData = BUCKETS[currentBucket]
 
   // Merge user prefs onto canonical exercise definitions
