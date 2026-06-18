@@ -127,18 +127,17 @@ export const INITIAL_EXERCISES = [
       'Stand with KB cleaned to rack position: resting on the back of your wrist and forearm, not pinched in your fingers. Dip 2–3 inches at the knees — no more — then drive up through your legs and use that momentum to help press the KB overhead. Lock arm out fully. Lower with control back to rack position. The leg drive lets you move more weight than a strict press and teaches power transfer. Too much dip turns it into a jerk; too little defeats the purpose.',
   },
   {
-    id: 'bench-dip',
-    name: 'Bench Dip',
-    category: 'bodyweight',
-    bodyweight: true,
-    weight: 0,
-    targetReps: 12,
+    id: 'kettlebell-thruster',
+    name: 'KB Thruster',
+    category: 'out-of-seat',
+    weight: 20,
+    targetReps: 8,
     totalSets: 3,
-    muscles: ['Triceps', 'Chest', 'Front Delts'],
-    gifUrl: `${GIF_BASE}/triceps/bench-dip-knees-bent.gif`,
-    videoUrl: 'https://www.youtube.com/watch?v=jdFzYGmvDyg',
+    muscles: ['Quads', 'Glutes', 'Shoulders', 'Triceps'],
+    gifUrl: `${GIF_BASE}/delts/kettlebell-thruster.gif`,
+    videoUrl: 'https://www.youtube.com/watch?v=GnLl2fTYnwI',
     formTip:
-      'Hands on the front edge of a sturdy chair, fingers pointing forward. Feet flat, knees at 90°. Keep hips close to the chair. Lower by bending the elbows — they track straight back, not flaring out — until your upper arms are roughly parallel to the floor. Press back to full lockout. Sliding your feet further forward increases range. If you feel shoulder impingement, do not go below 90° at the elbow — that is your limit.',
+      'Clean the KB to rack position at shoulder height, feet shoulder-width apart. Squat until thighs are parallel — chest tall, knees tracking over toes. Drive explosively through your heels and, at the top of the squat, use that momentum to press the KB directly overhead to full lockout. Lower back to rack position as you descend into the next rep — the squat and press flow as one continuous motion. Start lighter than you think; focus on the squat-to-press transition before adding weight.',
   },
 
   // ── Pull bucket ────────────────────────────────────────────────────────────
@@ -586,7 +585,7 @@ export const BUCKETS = {
       'kettlebell-arnold-press',
       'kettlebell-one-arm-floor-press',
       'kettlebell-push-press',
-      'bench-dip',
+      'kettlebell-thruster',
     ],
   },
   pull: {
