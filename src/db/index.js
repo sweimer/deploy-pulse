@@ -69,6 +69,12 @@ export async function initDB() {
     )
   }
 
+  // kettlebell-halo was briefly seeded at weight=15 (not a valid selector option);
+  // correct to 20 for any user whose DB has that transient value.
+  await db.query(
+    `UPDATE exercise_prefs SET weight = 20 WHERE id = 'kettlebell-halo' AND weight = 15`,
+  )
+
   return db
 }
 
