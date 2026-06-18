@@ -623,16 +623,13 @@ export const BUCKETS = {
     subtitle: 'Knee-friendly lower body',
     dot: 'bg-amber-400',
     exerciseIds: [
+      'kettlebell-halo',
       'goblet-squat',
       'romanian-deadlift',
       'calf-raise',
       'wall-sit',
       'dumbbell-swing',
       'rotating-squat-to-press',
-      'kettlebell-single-leg-deadlift',
-      'kettlebell-lunge-pass-through',
-      'kettlebell-front-squat',
-      'single-leg-glute-bridge',
     ],
   },
   core: {
