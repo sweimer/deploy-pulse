@@ -599,7 +599,7 @@ export const BUCKETS = {
       'reverse-fly',
       'dumbbell-pullover',
       'bicep-curl',
-      'upright-row',
+      'kettlebell-windmill',
       'kettlebell-sumo-high-pull',
       'kettlebell-one-arm-row',
     ],
