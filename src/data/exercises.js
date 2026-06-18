@@ -516,7 +516,7 @@ export const INITIAL_EXERCISES = [
     id: 'kettlebell-windmill',
     name: 'KB Windmill',
     category: 'out-of-seat',
-    weight: 15,
+    weight: 20,
     targetReps: 8,
     totalSets: 3,
     muscles: ['Obliques', 'Shoulders', 'Hip Flexors'],
