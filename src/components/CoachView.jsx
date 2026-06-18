@@ -119,7 +119,6 @@ export function CoachView({ logs, weeklyHabits }) {
         body: JSON.stringify({
           model: 'claude-3-5-haiku-20241022',
           max_tokens: 1024,
-          stream: true,
           system: SYSTEM_PROMPT,
           messages: [{ role: 'user', content: buildUserMessage(logs, weeklyHabits) }],
         }),
@@ -135,28 +134,8 @@ export function CoachView({ logs, weeklyHabits }) {
         return
       }
 
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop()
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue
-          const data = line.slice(6)
-          if (data === '[DONE]') continue
-          try {
-            const parsed = JSON.parse(data)
-            if (parsed.type === 'content_block_delta' && parsed.delta?.type === 'text_delta') {
-              setResponse((prev) => prev + parsed.delta.text)
-            }
-          } catch { /* ignore malformed SSE lines */ }
-        }
-      }
+      const data = await res.json()
+      setResponse(data.content?.[0]?.text ?? '')
     } catch (err) {
       if (err.name !== 'AbortError') setError(`err:${err.message}`)
     } finally {
