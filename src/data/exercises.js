@@ -593,16 +593,15 @@ export const BUCKETS = {
     subtitle: 'Back, biceps, and rear delts',
     dot: 'bg-emerald-400',
     exerciseIds: [
+      'kettlebell-halo',
       'bent-over-row',
       'dumbbell-row',
       'reverse-fly',
-      'upright-row',
       'dumbbell-pullover',
       'bicep-curl',
       'upright-row',
       'kettlebell-sumo-high-pull',
       'kettlebell-one-arm-row',
-      'kettlebell-alternating-row',
     ],
   },
   legs: {
