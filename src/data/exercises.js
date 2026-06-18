@@ -222,17 +222,17 @@ export const INITIAL_EXERCISES = [
 
   // ── Pull bucket (KB / bodyweight additions) ───────────────────────────────
   {
-    id: 'kettlebell-renegade-row',
-    name: 'KB Renegade Row',
+    id: 'upright-row',
+    name: 'Upright Row',
     category: 'out-of-seat',
     weight: 20,
-    targetReps: 8,
+    targetReps: 10,
     totalSets: 3,
-    muscles: ['Back', 'Core', 'Biceps'],
-    gifUrl: `${GIF_BASE}/upper-back/kettlebell-alternating-renegade-row.gif`,
-    videoUrl: 'https://www.youtube.com/watch?v=4qEIChzM4ZA',
+    muscles: ['Traps', 'Shoulders', 'Biceps'],
+    gifUrl: `${GIF_BASE}/delts/dumbbell-upright-row.gif`,
+    videoUrl: 'https://www.youtube.com/watch?v=KEKdHTI8V3c',
     formTip:
-      'Start in a high push-up position: one hand on the KB handle, other hand on the floor. Feet wider than shoulder-width for stability. Keep your hips square to the floor throughout — they must not rotate. Row the KB to your hip, pulling the elbow close to your body. Lower with control, then switch sides. The anti-rotation demand makes this harder than any standing row. Use considerably less weight than a normal row and focus entirely on preventing hip movement.',
+      'Stand holding dumbbells in front of your thighs, palms facing you. Pull both weights straight up along your body — lead with the elbows, not the hands — until they reach chin height. Elbows should flare out and end above wrist level at the top. Lower with control back to the start. Keep the movement vertical and close to your body throughout. Avoid shrugging your shoulders up at the top. If you feel shoulder impingement, reduce range so elbows stop at shoulder height rather than chin height.',
   },
   {
     id: 'kettlebell-sumo-high-pull',
@@ -599,7 +599,7 @@ export const BUCKETS = {
       'upright-row',
       'dumbbell-pullover',
       'bicep-curl',
-      'kettlebell-renegade-row',
+      'upright-row',
       'kettlebell-sumo-high-pull',
       'kettlebell-one-arm-row',
       'kettlebell-alternating-row',
