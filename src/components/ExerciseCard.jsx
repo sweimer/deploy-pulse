@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react'
+import { Check, ExternalLink } from 'lucide-react'
 
 const CATEGORY = {
   'out-of-seat': {
@@ -67,7 +67,21 @@ export function ExerciseCard({ exercise, setsLoggedToday, onLog, onUpdate }) {
         </div>
 
         {/* Name + muscles */}
-        <h3 className="text-[21px] font-semibold text-slate-800 leading-snug">{exercise.name}</h3>
+        <h3 className="text-[21px] font-semibold text-slate-800 leading-snug">
+          {exercise.videoUrl ? (
+            <a
+              href={exercise.videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 hover:text-blue-600"
+            >
+              {exercise.name}
+              <ExternalLink size={14} className="shrink-0 text-slate-400" />
+            </a>
+          ) : (
+            exercise.name
+          )}
+        </h3>
         <p className="text-xs text-slate-400 mt-0.5 mb-3">{exercise.muscles.join(' · ')}</p>
 
         {/* Weight + Reps controls */}
