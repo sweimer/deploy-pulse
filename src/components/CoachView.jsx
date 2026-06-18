@@ -117,7 +117,7 @@ export function CoachView({ logs, weeklyHabits }) {
           'anthropic-dangerous-direct-browser-access': 'true',
         },
         body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
+          model: 'claude-3-5-haiku-20241022',
           max_tokens: 1024,
           stream: true,
           system: SYSTEM_PROMPT,
@@ -127,7 +127,13 @@ export function CoachView({ logs, weeklyHabits }) {
       })
 
       if (res.status === 401) { setError('invalid_key'); setLoading(false); return }
-      if (!res.ok) { setError('network'); setLoading(false); return }
+      if (!res.ok) {
+        let detail = `HTTP ${res.status}`
+        try { const body = await res.json(); if (body?.error?.message) detail = body.error.message } catch { /* ignore */ }
+        setError(`err:${detail}`)
+        setLoading(false)
+        return
+      }
 
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
@@ -152,7 +158,7 @@ export function CoachView({ logs, weeklyHabits }) {
         }
       }
     } catch (err) {
-      if (err.name !== 'AbortError') setError('network')
+      if (err.name !== 'AbortError') setError(`err:${err.message}`)
     } finally {
       setLoading(false)
     }
@@ -222,11 +228,12 @@ export function CoachView({ logs, weeklyHabits }) {
             <button onClick={clearKey} className="underline">Change key</button>
           </p>
         )}
-        {error === 'network' && (
-          <p className="text-[15px] text-red-500">
-            Couldn't reach the coaching service. Check your connection and try again.{' '}
-            <button onClick={fetchCoaching} className="underline">Retry</button>
-          </p>
+        {error && error !== 'invalid_key' && (
+          <div className="space-y-1.5">
+            <p className="text-[15px] text-red-500 font-medium">Something went wrong.</p>
+            <p className="text-[13px] text-red-400 font-mono break-all">{error.replace(/^err:/, '')}</p>
+            <button onClick={fetchCoaching} className="text-[15px] text-red-500 underline block">Retry</button>
+          </div>
         )}
         {response && <div>{renderMarkdown(response)}</div>}
       </div>
