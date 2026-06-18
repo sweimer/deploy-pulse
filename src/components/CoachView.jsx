@@ -117,7 +117,7 @@ export function CoachView({ logs, weeklyHabits }) {
           'anthropic-dangerous-direct-browser-access': 'true',
         },
         body: JSON.stringify({
-          model: 'claude-3-5-haiku-20241022',
+          model: 'claude-3-haiku-20240307',
           max_tokens: 1024,
           system: SYSTEM_PROMPT,
           messages: [{ role: 'user', content: buildUserMessage(logs, weeklyHabits) }],
@@ -128,7 +128,7 @@ export function CoachView({ logs, weeklyHabits }) {
       if (res.status === 401) { setError('invalid_key'); setLoading(false); return }
       if (!res.ok) {
         let detail = `HTTP ${res.status}`
-        try { const body = await res.json(); if (body?.error?.message) detail = body.error.message } catch { /* ignore */ }
+        try { const body = await res.json(); if (body?.error?.message) detail = `${res.status}: ${body.error.message}` } catch { /* ignore */ }
         setError(`err:${detail}`)
         setLoading(false)
         return
