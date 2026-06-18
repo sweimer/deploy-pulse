@@ -117,10 +117,11 @@ export const INITIAL_EXERCISES = [
     id: 'kettlebell-halo',
     name: 'KB Halo',
     category: 'out-of-seat',
-    weight: 15,
+    weight: 20,
     targetReps: 10,
     totalSets: 3,
     muscles: ['Shoulders', 'Traps', 'Upper Back'],
+    gifUrl: 'https://gymvisual.com/img/p/4/0/1/2/9/40129.gif',
     videoUrl: 'https://www.youtube.com/watch?v=13SFATc-mJ4',
     formTip:
       'Hold the KB by the horns (sides of the handle) at chest height, bell facing up. Stand with feet shoulder-width apart, core braced. Circle the KB slowly around your head — keeping it close to your skull throughout — ending back at chest height. That is one rep. Alternate direction each rep or complete all reps in one direction then switch. Move slowly and with control; the weight should stay level with your head, not dipping behind your neck. Lighter is better here — this is a shoulder mobility exercise, not a strength test.',
