@@ -113,6 +113,7 @@ export default function App() {
                 onUpdate={updateExercise}
                 bucketKey={currentBucket}
                 onBucketChange={setBucketOverride}
+                groups={bucketData?.groups}
               />
 
               {/* Cardio & Mobility section */}
@@ -160,36 +161,85 @@ export default function App() {
   )
 }
 
-function ExerciseSection({ dot, subtitle, exercises, setsPerExercise, onLog, onUpdate, bucketKey, onBucketChange }) {
+function ExerciseSection({ dot, subtitle, exercises, setsPerExercise, onLog, onUpdate, bucketKey, onBucketChange, groups }) {
+  const exerciseById = Object.fromEntries(exercises.map((ex) => [ex.id, ex]))
+
+  const header = (
+    <div className="flex items-center gap-2 mb-3">
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
+      <div>
+        <div className="flex items-center gap-1 leading-none">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            Today's Focus:
+          </span>
+          <select
+            value={bucketKey}
+            onChange={(e) => onBucketChange(e.target.value)}
+            className="text-xs font-bold text-slate-500 uppercase tracking-wider bg-transparent border-none outline-none appearance-none cursor-pointer hover:text-slate-700"
+          >
+            {BUCKET_ORDER.map((key) => (
+              <option key={key} value={key}>
+                {BUCKETS[key].label}
+              </option>
+            ))}
+          </select>
+        </div>
+        {subtitle && (
+          <p className="text-[17px] text-slate-400 mt-0.5">{subtitle}</p>
+        )}
+      </div>
+    </div>
+  )
+
+  if (groups) {
+    return (
+      <section>
+        {header}
+        <div className="space-y-5">
+          {groups.map((group) => {
+            const groupExs = group.ids.map((id) => exerciseById[id]).filter(Boolean)
+            if (groupExs.length === 0) return null
+            const active = groupExs.filter((ex) => (setsPerExercise[ex.id] || 0) < (ex.totalSets || 3))
+            const done = groupExs.filter((ex) => (setsPerExercise[ex.id] || 0) >= (ex.totalSets || 3))
+            return (
+              <div key={group.label}>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                  {group.label}
+                </p>
+                {active.length > 0 && (
+                  <div className="grid grid-cols-2 gap-3">
+                    {active.map((ex) => (
+                      <ExerciseCard
+                        key={ex.id}
+                        exercise={ex}
+                        setsLoggedToday={setsPerExercise[ex.id] || 0}
+                        onLog={onLog}
+                        onUpdate={onUpdate}
+                      />
+                    ))}
+                  </div>
+                )}
+                {done.length > 0 && (
+                  <div className={`flex flex-wrap gap-2${active.length > 0 ? ' mt-2' : ''}`}>
+                    {done.map((ex) => (
+                      <DonePill key={ex.id} name={ex.name} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </section>
+    )
+  }
+
   const active = exercises.filter((ex) => (setsPerExercise[ex.id] || 0) < (ex.totalSets || 3))
   const done = exercises.filter((ex) => (setsPerExercise[ex.id] || 0) >= (ex.totalSets || 3))
 
   return (
     <section>
-      <div className="flex items-center gap-2 mb-3">
-        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
-        <div>
-          <div className="flex items-center gap-1 leading-none">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Today's Focus:
-            </span>
-            <select
-              value={bucketKey}
-              onChange={(e) => onBucketChange(e.target.value)}
-              className="text-xs font-bold text-slate-500 uppercase tracking-wider bg-transparent border-none outline-none appearance-none cursor-pointer hover:text-slate-700"
-            >
-              {BUCKET_ORDER.map((key) => (
-                <option key={key} value={key}>
-                  {BUCKETS[key].label}
-                </option>
-              ))}
-            </select>
-          </div>
-          {subtitle && (
-            <p className="text-[17px] text-slate-400 mt-0.5">{subtitle}</p>
-          )}
-        </div>
-      </div>
+      {header}
       {active.length > 0 && (
         <div className="grid grid-cols-2 gap-3">
           {active.map((ex) => (
