@@ -568,6 +568,42 @@ export const INITIAL_EXERCISES = [
 
   // ── Kettlebell bucket ─────────────────────────────────────────────────────
   {
+    id: 'kb-pullover',
+    name: 'KB Pullover',
+    category: 'out-of-seat',
+    weight: 15,
+    targetReps: 10,
+    totalSets: 3,
+    muscles: ['Lats', 'Chest', 'Core'],
+    gifUrl: `${GIF_BASE}/pectorals/dumbbell-pullover.gif`,
+    formTip:
+      'Stand or lie holding the KB with both hands. Arc it overhead and back in a full pullover motion, keeping a slight bend in your elbows throughout. Lower until you feel a deep lat stretch, then pull back along the same arc. Keep your ribs down and core braced — the overhead position wants to arch your lower back.',
+  },
+  {
+    id: 'kb-upright-row',
+    name: 'KB Upright Row',
+    category: 'out-of-seat',
+    weight: 20,
+    targetReps: 10,
+    totalSets: 3,
+    muscles: ['Traps', 'Shoulders', 'Biceps'],
+    gifUrl: `${GIF_BASE}/delts/kettlebell-upright-row.gif`,
+    formTip:
+      'Hold the KB by the handle in front of your thighs, palm facing you. Pull it straight up along your body — lead with the elbows, not the hands — until they reach chin height and flare out above wrist level. Keep the movement close to your body. Lower with control. Stop the pull at shoulder height if you feel any shoulder impingement.',
+  },
+  {
+    id: 'kb-push-press',
+    name: 'KB Push Press',
+    category: 'out-of-seat',
+    weight: 20,
+    targetReps: 8,
+    totalSets: 3,
+    muscles: ['Shoulders', 'Triceps', 'Legs', 'Core'],
+    gifUrl: `${GIF_BASE}/delts/kettlebell-thruster.gif`,
+    formTip:
+      'Clean the KB to rack position at shoulder height. Dip slightly at the knees — a short, sharp quarter-squat — then drive up explosively, using the leg momentum to launch the KB overhead to full lockout. Lower back to rack under control. The dip-and-drive is what separates this from a strict press: let the legs do the work on the way up.',
+  },
+  {
     id: 'kb-goblet-squat-to-press',
     name: 'Goblet Squat to Press',
     category: 'out-of-seat',
@@ -1031,6 +1067,9 @@ export const BUCKETS = {
       'kb-clock-swings',
       'kb-goblet-squat-to-press',
       'kb-core-swing',
+      'kb-pullover',
+      'kb-upright-row',
+      'kb-push-press',
       'kb-row',
       'kb-single-arm-high-pull',
       'kb-rick-press-tris',
@@ -1055,7 +1094,7 @@ export const BUCKETS = {
     groups: [
       {
         label: 'Warm-Up & Flow',
-        ids: ['kb-around-the-world', 'kb-halo-to-hip', 'kb-clock-swings', 'kb-goblet-squat-to-press', 'kb-core-swing'],
+        ids: ['kb-around-the-world', 'kb-halo-to-hip', 'kb-clock-swings', 'kb-goblet-squat-to-press', 'kb-core-swing', 'kb-pullover', 'kb-upright-row', 'kb-push-press'],
       },
       {
         label: 'Upper Body',
